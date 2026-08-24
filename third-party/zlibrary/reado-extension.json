@@ -1,0 +1,65 @@
+{
+  "manifestVersion": 1,
+  "id": "community.readoi.zlibrary",
+  "version": "1.0.0",
+  "name": "Z-Library",
+  "description": "Search and acquisition provider installed independently from Readio.",
+  "author": "Readio community",
+  "repository": "https://github.com/readoi/extensions/tree/main/third-party/zlibrary",
+  "types": ["book"],
+  "resources": [
+    { "name": "search", "supportsPagination": true },
+    { "name": "acquisition" }
+  ],
+  "config": [
+    { "key": "email", "type": "text", "title": "Email" },
+    { "key": "password", "type": "password", "title": "Password" },
+    { "key": "remixUserId", "type": "text", "title": "Remix User ID" },
+    { "key": "remixUserKey", "type": "password", "title": "Remix User Key" },
+    {
+      "key": "domain",
+      "type": "select",
+      "title": "API domain",
+      "default": "",
+      "options": [
+        { "label": "Auto", "value": "" },
+        { "label": "article.sk", "value": "https://article.sk" },
+        { "label": "1lib.sk", "value": "https://1lib.sk" },
+        { "label": "librella.fi", "value": "https://librella.fi" },
+        { "label": "lexlib.fi", "value": "https://lexlib.fi" },
+        { "label": "bookabooki.fi", "value": "https://bookabooki.fi" }
+      ]
+    },
+    {
+      "key": "preferredFormat",
+      "type": "select",
+      "title": "Preferred format",
+      "default": "",
+      "options": [
+        { "label": "Any", "value": "" },
+        { "label": "EPUB", "value": "epub" },
+        { "label": "PDF", "value": "pdf" },
+        { "label": "MOBI", "value": "mobi" },
+        { "label": "AZW3", "value": "azw3" }
+      ]
+    }
+  ],
+  "behaviorHints": {
+    "configurable": true,
+    "configurationRequired": false
+  },
+  "transport": {
+    "kind": "script",
+    "bundleUrl": "https://raw.githubusercontent.com/readoi/extensions/main/third-party/zlibrary/extension.js",
+    "sha256": "158d0b249341819008e943bd306eb990f8aa19c35cd53114bf64f47b7bf28d18"
+  },
+  "permissions": {
+    "hosts": [
+      "https://article.sk",
+      "https://1lib.sk",
+      "https://librella.fi",
+      "https://lexlib.fi",
+      "https://bookabooki.fi"
+    ]
+  }
+}
