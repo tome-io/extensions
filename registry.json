@@ -1,0 +1,13 @@
+{
+  "registryVersion": 1,
+  "extensions": [
+    {
+      "id": "community.tomeio.moon-reader",
+      "manifestUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/moon-reader/tomeio-extension.json",
+      "repositoryUrl": "https://github.com/tome-io/extensions/tree/main/community/moon-reader",
+      "minimumClientVersion": "1.0.0",
+      "reviewedAt": "2026-08-28T00:00:00Z",
+      "hostAdapters": ["reader.moon-plus"]
+    }
+  ]
+}
