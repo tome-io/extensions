@@ -11,3 +11,6 @@ downloaded, and the adapter is inactive until the add-on is installed and its ba
 folder is configured.
 
 Install it from Tomeio's **Add-ons → Community** view.
+
+The add-on manifest uses the Moon+ Reader icon published with the app's official
+Google Play listing. Moon+ Reader and its branding belong to their respective owner.
