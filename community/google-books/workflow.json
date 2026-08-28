@@ -1,0 +1,910 @@
+{
+  "workflowVersion": 1,
+  "resources": {
+    "catalog": {
+      "steps": [
+        {
+          "id": "books",
+          "request": {
+            "urls": "https://www.googleapis.com/books/v1/volumes",
+            "headers": {
+              "X-Goog-Api-Key": {
+                "$op": "string",
+                "value": {
+                  "$op": "path",
+                  "path": "config.api_key"
+                }
+              }
+            },
+            "query": {
+              "q": {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "equals",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "input.catalogId",
+                        "default": "new-fiction"
+                      },
+                      "new-fiction"
+                    ]
+                  },
+                  "subject:fiction",
+                  {
+                    "$op": "if",
+                    "values": [
+                      {
+                        "$op": "equals",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "input.catalogId",
+                            "default": "new-fiction"
+                          },
+                          "science-fiction"
+                        ]
+                      },
+                      "subject:\"science fiction\"",
+                      {
+                        "$op": "if",
+                        "values": [
+                          {
+                            "$op": "equals",
+                            "values": [
+                              {
+                                "$op": "path",
+                                "path": "input.catalogId",
+                                "default": "new-fiction"
+                              },
+                              "self-help"
+                            ]
+                          },
+                          "subject:\"self-help\"",
+                          {
+                            "$op": "concat",
+                            "values": [
+                              "subject:",
+                              {
+                                "$op": "string",
+                                "value": {
+                                  "$op": "path",
+                                  "path": "input.catalogId",
+                                  "default": "new-fiction"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "orderBy": {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "equals",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "input.catalogId",
+                        "default": "new-fiction"
+                      },
+                      "new-fiction"
+                    ]
+                  },
+                  "newest",
+                  "relevance"
+                ]
+              },
+              "startIndex": {
+                "$op": "multiply",
+                "values": [
+                  {
+                    "$op": "add",
+                    "values": [
+                      {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "input.page",
+                          "default": 1
+                        }
+                      },
+                      -1
+                    ]
+                  },
+                  {
+                    "$op": "number",
+                    "value": {
+                      "$op": "path",
+                      "path": "input.limit",
+                      "default": 24
+                    }
+                  }
+                ]
+              },
+              "maxResults": {
+                "$op": "number",
+                "value": {
+                  "$op": "path",
+                  "path": "input.limit",
+                  "default": 24
+                }
+              },
+              "printType": "books",
+              "projection": "lite",
+              "showPreorders": "true",
+              "langRestrict": {
+                "$op": "path",
+                "path": "input.language"
+              }
+            }
+          }
+        }
+      ],
+      "output": {
+        "items": {
+          "$op": "compact",
+          "value": {
+            "$op": "map",
+            "value": {
+              "$op": "path",
+              "path": "steps.books.body.items",
+              "default": []
+            },
+            "as": "book",
+            "values": [
+              {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "and",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "book.id"
+                      },
+                      {
+                        "$op": "path",
+                        "path": "book.volumeInfo.title"
+                      }
+                    ]
+                  },
+                  {
+                    "$op": "compact",
+                    "value": {
+                      "id": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.id"
+                        }
+                      },
+                      "title": {
+                        "$op": "concat",
+                        "values": [
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.volumeInfo.title"
+                            }
+                          },
+                          {
+                            "$op": "if",
+                            "values": [
+                              {
+                                "$op": "path",
+                                "path": "book.volumeInfo.subtitle"
+                              },
+                              {
+                                "$op": "concat",
+                                "values": [
+                                  ": ",
+                                  {
+                                    "$op": "string",
+                                    "value": {
+                                      "$op": "path",
+                                      "path": "book.volumeInfo.subtitle"
+                                    }
+                                  }
+                                ]
+                              },
+                              ""
+                            ]
+                          }
+                        ]
+                      },
+                      "authors": {
+                        "$op": "array",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.authors"
+                        }
+                      },
+                      "description": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.description"
+                        }
+                      },
+                      "coverUrl": {
+                        "$op": "concat",
+                        "values": [
+                          "https://books.google.com/books/content?id=",
+                          {
+                            "$op": "encode",
+                            "value": {
+                              "$op": "string",
+                              "value": {
+                                "$op": "path",
+                                "path": "book.id"
+                              }
+                            }
+                          },
+                          "&printsec=frontcover&img=1&zoom=2&source=gbs_api"
+                        ]
+                      },
+                      "publishedYear": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "split",
+                          "value": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.volumeInfo.publishedDate"
+                            }
+                          },
+                          "separator": "-",
+                          "index": 0
+                        }
+                      },
+                      "subjects": {
+                        "$op": "array",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.categories"
+                        }
+                      },
+                      "identifiers": {
+                        "$op": "compact",
+                        "value": {
+                          "googleBooks": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.id"
+                            }
+                          }
+                        }
+                      },
+                      "rating": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.averageRating"
+                        }
+                      },
+                      "ratingsCount": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.ratingsCount"
+                        }
+                      },
+                      "infoUrl": {
+                        "$op": "concat",
+                        "values": [
+                          "https://books.google.com/books?id=",
+                          {
+                            "$op": "encode",
+                            "value": {
+                              "$op": "string",
+                              "value": {
+                                "$op": "path",
+                                "path": "book.id"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "offers": {
+                        "$op": "compact",
+                        "value": [
+                          {
+                            "$op": "if",
+                            "values": [
+                              {
+                                "$op": "in",
+                                "values": [
+                                  {
+                                    "$op": "path",
+                                    "path": "book.saleInfo.saleability"
+                                  },
+                                  [
+                                    "FOR_SALE",
+                                    "FREE",
+                                    "FOR_PREORDER"
+                                  ]
+                                ]
+                              },
+                              {
+                                "$op": "compact",
+                                "value": {
+                                  "provider": "Google Books",
+                                  "availability": {
+                                    "$op": "if",
+                                    "values": [
+                                      {
+                                        "$op": "equals",
+                                        "values": [
+                                          {
+                                            "$op": "path",
+                                            "path": "book.saleInfo.saleability"
+                                          },
+                                          "FREE"
+                                        ]
+                                      },
+                                      "free",
+                                      {
+                                        "$op": "if",
+                                        "values": [
+                                          {
+                                            "$op": "equals",
+                                            "values": [
+                                              {
+                                                "$op": "path",
+                                                "path": "book.saleInfo.saleability"
+                                              },
+                                              "FOR_PREORDER"
+                                            ]
+                                          },
+                                          "preorder",
+                                          "for-sale"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "country": {
+                                    "$op": "string",
+                                    "value": {
+                                      "$op": "path",
+                                      "path": "book.saleInfo.country"
+                                    }
+                                  },
+                                  "price": {
+                                    "$op": "if",
+                                    "values": [
+                                      {
+                                        "$op": "and",
+                                        "values": [
+                                          {
+                                            "$op": "path",
+                                            "path": "book.saleInfo.retailPrice.amount"
+                                          },
+                                          {
+                                            "$op": "path",
+                                            "path": "book.saleInfo.retailPrice.currencyCode"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "$op": "compact",
+                                        "value": {
+                                          "amount": {
+                                            "$op": "number",
+                                            "value": {
+                                              "$op": "path",
+                                              "path": "book.saleInfo.retailPrice.amount"
+                                            }
+                                          },
+                                          "currency": {
+                                            "$op": "string",
+                                            "value": {
+                                              "$op": "path",
+                                              "path": "book.saleInfo.retailPrice.currencyCode"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      null
+                                    ]
+                                  },
+                                  "url": {
+                                    "$op": "concat",
+                                    "values": [
+                                      "https://books.google.com/books?id=",
+                                      {
+                                        "$op": "encode",
+                                        "value": {
+                                          "$op": "string",
+                                          "value": {
+                                            "$op": "path",
+                                            "path": "book.id"
+                                          }
+                                        }
+                                      },
+                                      "&buy="
+                                    ]
+                                  }
+                                }
+                              },
+                              null
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  null
+                ]
+              }
+            ]
+          }
+        },
+        "nextPage": {
+          "$op": "if",
+          "values": [
+            {
+              "$op": "equals",
+              "values": [
+                {
+                  "$op": "length",
+                  "value": {
+                    "$op": "path",
+                    "path": "steps.books.body.items",
+                    "default": []
+                  }
+                },
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 24
+                  }
+                }
+              ]
+            },
+            {
+              "$op": "add",
+              "values": [
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.page",
+                    "default": 1
+                  }
+                },
+                1
+              ]
+            },
+            null
+          ]
+        }
+      }
+    },
+    "search": {
+      "steps": [
+        {
+          "id": "books",
+          "request": {
+            "urls": "https://www.googleapis.com/books/v1/volumes",
+            "headers": {
+              "X-Goog-Api-Key": {
+                "$op": "string",
+                "value": {
+                  "$op": "path",
+                  "path": "config.api_key"
+                }
+              }
+            },
+            "query": {
+              "q": {
+                "$op": "string",
+                "value": {
+                  "$op": "path",
+                  "path": "input.query"
+                }
+              },
+              "orderBy": "relevance",
+              "startIndex": {
+                "$op": "multiply",
+                "values": [
+                  {
+                    "$op": "add",
+                    "values": [
+                      {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "input.page",
+                          "default": 1
+                        }
+                      },
+                      -1
+                    ]
+                  },
+                  {
+                    "$op": "number",
+                    "value": {
+                      "$op": "path",
+                      "path": "input.limit",
+                      "default": 24
+                    }
+                  }
+                ]
+              },
+              "maxResults": {
+                "$op": "number",
+                "value": {
+                  "$op": "path",
+                  "path": "input.limit",
+                  "default": 24
+                }
+              },
+              "printType": "books",
+              "projection": "lite",
+              "showPreorders": "true",
+              "langRestrict": {
+                "$op": "path",
+                "path": "input.language"
+              }
+            }
+          }
+        }
+      ],
+      "output": {
+        "items": {
+          "$op": "compact",
+          "value": {
+            "$op": "map",
+            "value": {
+              "$op": "path",
+              "path": "steps.books.body.items",
+              "default": []
+            },
+            "as": "book",
+            "values": [
+              {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "and",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "book.id"
+                      },
+                      {
+                        "$op": "path",
+                        "path": "book.volumeInfo.title"
+                      }
+                    ]
+                  },
+                  {
+                    "$op": "compact",
+                    "value": {
+                      "id": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.id"
+                        }
+                      },
+                      "title": {
+                        "$op": "concat",
+                        "values": [
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.volumeInfo.title"
+                            }
+                          },
+                          {
+                            "$op": "if",
+                            "values": [
+                              {
+                                "$op": "path",
+                                "path": "book.volumeInfo.subtitle"
+                              },
+                              {
+                                "$op": "concat",
+                                "values": [
+                                  ": ",
+                                  {
+                                    "$op": "string",
+                                    "value": {
+                                      "$op": "path",
+                                      "path": "book.volumeInfo.subtitle"
+                                    }
+                                  }
+                                ]
+                              },
+                              ""
+                            ]
+                          }
+                        ]
+                      },
+                      "authors": {
+                        "$op": "array",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.authors"
+                        }
+                      },
+                      "description": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.description"
+                        }
+                      },
+                      "coverUrl": {
+                        "$op": "concat",
+                        "values": [
+                          "https://books.google.com/books/content?id=",
+                          {
+                            "$op": "encode",
+                            "value": {
+                              "$op": "string",
+                              "value": {
+                                "$op": "path",
+                                "path": "book.id"
+                              }
+                            }
+                          },
+                          "&printsec=frontcover&img=1&zoom=2&source=gbs_api"
+                        ]
+                      },
+                      "publishedYear": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "split",
+                          "value": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.volumeInfo.publishedDate"
+                            }
+                          },
+                          "separator": "-",
+                          "index": 0
+                        }
+                      },
+                      "subjects": {
+                        "$op": "array",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.categories"
+                        }
+                      },
+                      "identifiers": {
+                        "$op": "compact",
+                        "value": {
+                          "googleBooks": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.id"
+                            }
+                          }
+                        }
+                      },
+                      "rating": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.averageRating"
+                        }
+                      },
+                      "ratingsCount": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.volumeInfo.ratingsCount"
+                        }
+                      },
+                      "infoUrl": {
+                        "$op": "concat",
+                        "values": [
+                          "https://books.google.com/books?id=",
+                          {
+                            "$op": "encode",
+                            "value": {
+                              "$op": "string",
+                              "value": {
+                                "$op": "path",
+                                "path": "book.id"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "offers": {
+                        "$op": "compact",
+                        "value": [
+                          {
+                            "$op": "if",
+                            "values": [
+                              {
+                                "$op": "in",
+                                "values": [
+                                  {
+                                    "$op": "path",
+                                    "path": "book.saleInfo.saleability"
+                                  },
+                                  [
+                                    "FOR_SALE",
+                                    "FREE",
+                                    "FOR_PREORDER"
+                                  ]
+                                ]
+                              },
+                              {
+                                "$op": "compact",
+                                "value": {
+                                  "provider": "Google Books",
+                                  "availability": {
+                                    "$op": "if",
+                                    "values": [
+                                      {
+                                        "$op": "equals",
+                                        "values": [
+                                          {
+                                            "$op": "path",
+                                            "path": "book.saleInfo.saleability"
+                                          },
+                                          "FREE"
+                                        ]
+                                      },
+                                      "free",
+                                      {
+                                        "$op": "if",
+                                        "values": [
+                                          {
+                                            "$op": "equals",
+                                            "values": [
+                                              {
+                                                "$op": "path",
+                                                "path": "book.saleInfo.saleability"
+                                              },
+                                              "FOR_PREORDER"
+                                            ]
+                                          },
+                                          "preorder",
+                                          "for-sale"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "country": {
+                                    "$op": "string",
+                                    "value": {
+                                      "$op": "path",
+                                      "path": "book.saleInfo.country"
+                                    }
+                                  },
+                                  "price": {
+                                    "$op": "if",
+                                    "values": [
+                                      {
+                                        "$op": "and",
+                                        "values": [
+                                          {
+                                            "$op": "path",
+                                            "path": "book.saleInfo.retailPrice.amount"
+                                          },
+                                          {
+                                            "$op": "path",
+                                            "path": "book.saleInfo.retailPrice.currencyCode"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "$op": "compact",
+                                        "value": {
+                                          "amount": {
+                                            "$op": "number",
+                                            "value": {
+                                              "$op": "path",
+                                              "path": "book.saleInfo.retailPrice.amount"
+                                            }
+                                          },
+                                          "currency": {
+                                            "$op": "string",
+                                            "value": {
+                                              "$op": "path",
+                                              "path": "book.saleInfo.retailPrice.currencyCode"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      null
+                                    ]
+                                  },
+                                  "url": {
+                                    "$op": "concat",
+                                    "values": [
+                                      "https://books.google.com/books?id=",
+                                      {
+                                        "$op": "encode",
+                                        "value": {
+                                          "$op": "string",
+                                          "value": {
+                                            "$op": "path",
+                                            "path": "book.id"
+                                          }
+                                        }
+                                      },
+                                      "&buy="
+                                    ]
+                                  }
+                                }
+                              },
+                              null
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  null
+                ]
+              }
+            ]
+          }
+        },
+        "nextPage": {
+          "$op": "if",
+          "values": [
+            {
+              "$op": "equals",
+              "values": [
+                {
+                  "$op": "length",
+                  "value": {
+                    "$op": "path",
+                    "path": "steps.books.body.items",
+                    "default": []
+                  }
+                },
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 24
+                  }
+                }
+              ]
+            },
+            {
+              "$op": "add",
+              "values": [
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.page",
+                    "default": 1
+                  }
+                },
+                1
+              ]
+            },
+            null
+          ]
+        }
+      }
+    }
+  }
+}

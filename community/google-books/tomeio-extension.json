@@ -1,0 +1,46 @@
+{
+  "manifestVersion": 1,
+  "id": "community.tomeio.google-books",
+  "version": "0.1.0",
+  "name": "Google Books",
+  "description": "Google Books topic discovery, search, metadata, regional prices, and source links.",
+  "author": "Tomeio community",
+  "homepage": "https://books.google.com",
+  "repository": "https://github.com/tome-io/extensions/tree/main/community/google-books",
+  "types": ["book"],
+  "resources": [
+    { "name": "catalog", "supportsPagination": true },
+    { "name": "search", "supportsPagination": true }
+  ],
+  "providerRoles": ["discovery", "search"],
+  "catalogs": [
+    { "id": "new-fiction", "name": "New fiction", "resource": "catalog" },
+    { "id": "fantasy", "name": "Fantasy", "resource": "catalog" },
+    { "id": "science-fiction", "name": "Science fiction", "resource": "catalog" },
+    { "id": "romance", "name": "Romance", "resource": "catalog" },
+    { "id": "mystery", "name": "Mystery & crime", "resource": "catalog" },
+    { "id": "self-help", "name": "Self-help", "resource": "catalog" },
+    { "id": "business", "name": "Business", "resource": "catalog" },
+    { "id": "science", "name": "Science", "resource": "catalog" }
+  ],
+  "config": [
+    { "key": "api_key", "type": "password", "title": "Google Books API key", "required": true }
+  ],
+  "behaviorHints": { "configurable": true, "configurationRequired": true },
+  "attribution": {
+    "label": "Powered by Google",
+    "url": "https://books.google.com",
+    "imageUrl": "https://books.google.com/googlebooks/images/poweredby.png"
+  },
+  "transport": {
+    "kind": "declarative",
+    "definitionUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/google-books/workflow.json"
+  },
+  "permissions": {
+    "hosts": [
+      "https://raw.githubusercontent.com",
+      "https://www.googleapis.com",
+      "https://books.google.com"
+    ]
+  }
+}

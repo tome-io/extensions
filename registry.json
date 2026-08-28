@@ -18,6 +18,13 @@
         "com.flyersoft.moonreaderp",
         "com.flyersoft.moonreader"
       ]
+    },
+    {
+      "id": "community.tomeio.google-books",
+      "manifestUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/google-books/tomeio-extension.json",
+      "repositoryUrl": "https://github.com/tome-io/extensions/tree/main/community/google-books",
+      "minimumClientVersion": "1.0.0",
+      "reviewedAt": "2026-08-28T00:00:00Z"
     }
   ]
 }
