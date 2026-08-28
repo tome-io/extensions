@@ -941,6 +941,192 @@
           ]
         }
       }
+    },
+    "libraryAction": {
+      "steps": [
+        {
+          "id": "book",
+          "when": {
+            "$op": "not",
+            "value": {
+              "$op": "and",
+              "values": [
+                {
+                  "$op": "equals",
+                  "values": [
+                    { "$op": "path", "path": "input.platform" },
+                    "android"
+                  ]
+                },
+                { "$op": "path", "path": "input.book.localFile" },
+                {
+                  "$op": "in",
+                  "values": [
+                    {
+                      "$op": "lowercase",
+                      "value": { "$op": "path", "path": "input.book.localFile.format" }
+                    },
+                    ["epub", "pdf"]
+                  ]
+                }
+              ]
+            }
+          },
+          "request": {
+            "urls": {
+              "$op": "if",
+              "values": [
+                { "$op": "path", "path": "input.book.identifiers.googleBooks" },
+                {
+                  "$op": "concat",
+                  "values": [
+                    "https://www.googleapis.com/books/v1/volumes/",
+                    {
+                      "$op": "encode",
+                      "value": {
+                        "$op": "path",
+                        "path": "input.book.identifiers.googleBooks"
+                      }
+                    }
+                  ]
+                },
+                "https://www.googleapis.com/books/v1/volumes"
+              ]
+            },
+            "query": {
+              "key": {
+                "$op": "trim",
+                "value": { "$op": "path", "path": "config.api_key" }
+              },
+              "q": {
+                "$op": "if",
+                "values": [
+                  { "$op": "path", "path": "input.book.identifiers.googleBooks" },
+                  null,
+                  {
+                    "$op": "if",
+                    "values": [
+                      { "$op": "path", "path": "input.book.identifiers.isbn" },
+                      {
+                        "$op": "concat",
+                        "values": [
+                          "isbn:",
+                          { "$op": "path", "path": "input.book.identifiers.isbn" }
+                        ]
+                      },
+                      {
+                        "$op": "concat",
+                        "values": [
+                          "intitle:\"",
+                          { "$op": "path", "path": "input.book.title" },
+                          "\"",
+                          {
+                            "$op": "if",
+                            "values": [
+                              {
+                                "$op": "first",
+                                "value": { "$op": "path", "path": "input.book.authors" }
+                              },
+                              {
+                                "$op": "concat",
+                                "values": [
+                                  " inauthor:\"",
+                                  {
+                                    "$op": "first",
+                                    "value": { "$op": "path", "path": "input.book.authors" }
+                                  },
+                                  "\""
+                                ]
+                              },
+                              ""
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "projection": "lite",
+              "maxResults": {
+                "$op": "if",
+                "values": [
+                  { "$op": "path", "path": "input.book.identifiers.googleBooks" },
+                  null,
+                  "1"
+                ]
+              },
+              "printType": {
+                "$op": "if",
+                "values": [
+                  { "$op": "path", "path": "input.book.identifiers.googleBooks" },
+                  null,
+                  "books"
+                ]
+              }
+            }
+          },
+          "accept": {
+            "$op": "coalesce",
+            "values": [
+              { "$op": "path", "path": "response.body.id" },
+              { "$op": "path", "path": "response.body.items.0.id" }
+            ]
+          }
+        }
+      ],
+      "output": {
+        "$op": "if",
+        "values": [
+          {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "equals",
+                "values": [
+                  { "$op": "path", "path": "input.platform" },
+                  "android"
+                ]
+              },
+              { "$op": "path", "path": "input.book.localFile" },
+              {
+                "$op": "in",
+                "values": [
+                  {
+                    "$op": "lowercase",
+                    "value": { "$op": "path", "path": "input.book.localFile.format" }
+                  },
+                  ["epub", "pdf"]
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "openLocalFile",
+            "packageName": "com.google.android.apps.books"
+          },
+          {
+            "kind": "openUrl",
+            "url": {
+              "$op": "concat",
+              "values": [
+                "https://books.google.com/books?id=",
+                {
+                  "$op": "encode",
+                  "value": {
+                    "$op": "coalesce",
+                    "values": [
+                      { "$op": "path", "path": "input.book.identifiers.googleBooks" },
+                      { "$op": "path", "path": "steps.book.body.id" },
+                      { "$op": "path", "path": "steps.book.body.items.0.id" }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
     }
   }
 }

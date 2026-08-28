@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.google-books",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "name": "Google Books",
   "description": "Google Books topic discovery, search, metadata, regional prices, and source links.",
   "author": "Tomeio community",
@@ -11,7 +11,8 @@
   "types": ["book"],
   "resources": [
     { "name": "catalog", "supportsPagination": true },
-    { "name": "search", "supportsPagination": true }
+    { "name": "search", "supportsPagination": true },
+    { "name": "libraryAction" }
   ],
   "providerRoles": ["discovery", "search"],
   "catalogs": [
@@ -28,6 +29,14 @@
     { "key": "api_key", "type": "password", "title": "Google Books API key", "required": true }
   ],
   "behaviorHints": { "configurable": true, "configurationRequired": true },
+  "libraryActions": [
+    {
+      "id": "open",
+      "title": "Open in Google Play Books",
+      "icon": "book-open",
+      "placements": ["library", "details"]
+    }
+  ],
   "attribution": {
     "label": "Powered by Google",
     "url": "https://books.google.com",
@@ -42,6 +51,7 @@
       "https://raw.githubusercontent.com",
       "https://www.googleapis.com",
       "https://books.google.com"
-    ]
+    ],
+    "androidPackages": ["com.google.android.apps.books"]
   }
 }

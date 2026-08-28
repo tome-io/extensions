@@ -7,6 +7,10 @@ covers, ratings, descriptions, regional prices, and links back to Google Books. 
 the Download provider role: Google purchase and source URLs open on the web instead of returning a
 native book file to Tomeio.
 
+Its library action opens a downloaded EPUB or PDF directly in Google Play Books on Android. For
+books without a compatible local file, it resolves the Google Books record and opens its web page.
+Tomeio performs local-file handoff itself; the declarative workflow never receives the file URI.
+
 The add-on requires a user-provided Google Books API key. Tomeio stores the password configuration
 in secure device storage and sends it using Google Books' documented `key` query parameter.
 

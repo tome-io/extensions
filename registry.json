@@ -24,7 +24,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/google-books/tomeio-extension.json",
       "repositoryUrl": "https://github.com/tome-io/extensions/tree/main/community/google-books",
       "minimumClientVersion": "1.0.0",
-      "reviewedAt": "2026-08-28T00:00:00Z"
+      "reviewedAt": "2026-08-28T00:00:00Z",
+      "androidPackages": ["com.google.android.apps.books"]
     }
   ]
 }
