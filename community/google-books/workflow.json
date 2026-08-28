@@ -7,16 +7,14 @@
           "id": "books",
           "request": {
             "urls": "https://www.googleapis.com/books/v1/volumes",
-            "headers": {
-              "X-Goog-Api-Key": {
-                "$op": "string",
+            "query": {
+              "key": {
+                "$op": "trim",
                 "value": {
                   "$op": "path",
                   "path": "config.api_key"
                 }
-              }
-            },
-            "query": {
+              },
               "q": {
                 "$op": "if",
                 "values": [
@@ -497,16 +495,14 @@
           "id": "books",
           "request": {
             "urls": "https://www.googleapis.com/books/v1/volumes",
-            "headers": {
-              "X-Goog-Api-Key": {
-                "$op": "string",
+            "query": {
+              "key": {
+                "$op": "trim",
                 "value": {
                   "$op": "path",
                   "path": "config.api_key"
                 }
-              }
-            },
-            "query": {
+              },
               "q": {
                 "$op": "string",
                 "value": {
