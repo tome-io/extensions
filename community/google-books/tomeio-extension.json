@@ -1,11 +1,12 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.google-books",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Google Books",
   "description": "Google Books topic discovery, search, metadata, regional prices, and source links.",
   "author": "Tomeio community",
   "homepage": "https://books.google.com",
+  "icon": "https://play-lh.googleusercontent.com/KQKRmi5uic0yjSl7rfXKRyDunmQP1d7kqsswnKM4QPkq8OtQtAYAqb7nKsLyQKq7QXD01s4EVpxfDK7G9gyzZQ=s512-rw",
   "repository": "https://github.com/tome-io/extensions/tree/main/community/google-books",
   "types": ["book"],
   "resources": [
