@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.moon-reader",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "name": "Moon+ Reader",
   "description": "Imports Moon+ Reader progress and opens local books in Moon+ Reader.",
   "author": "Tomeio community",
@@ -28,5 +28,22 @@
       "requires": { "localFile": true, "platforms": ["android"] }
     }
   ],
-  "transport": { "kind": "host", "adapter": "reader.moon-plus" }
+  "transport": {
+    "kind": "device",
+    "definitionUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/moon-reader/device-workflow.json"
+  },
+  "permissions": {
+    "hosts": ["https://raw.githubusercontent.com"],
+    "device": [
+      "directory.read",
+      "archive.read",
+      "sqlite.read",
+      "android.preferences.read",
+      "android.open-file"
+    ],
+    "androidPackages": [
+      "com.flyersoft.moonreaderp",
+      "com.flyersoft.moonreader"
+    ]
+  }
 }

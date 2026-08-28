@@ -1,0 +1,15 @@
+{
+  "name": "@tomeio-extension/moon-reader",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tomeio/addon-sdk": "github:tome-io/addon-sdk#v0.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
