@@ -134,7 +134,8 @@
                 }
               },
               "printType": "books",
-              "projection": "lite",
+              "projection": "full",
+              "filter": "paid-ebooks",
               "showPreorders": "true",
               "langRestrict": {
                 "$op": "path",
@@ -234,18 +235,37 @@
                       "coverUrl": {
                         "$op": "concat",
                         "values": [
-                          "https://books.google.com/books/content?id=",
+                          "https://",
                           {
-                            "$op": "encode",
+                            "$op": "split",
                             "value": {
-                              "$op": "string",
-                              "value": {
-                                "$op": "path",
-                                "path": "book.id"
-                              }
-                            }
-                          },
-                          "&printsec=frontcover&img=1&zoom=2&source=gbs_api"
+                              "$op": "coalesce",
+                              "values": [
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.extraLarge" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.large" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.medium" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.small" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.thumbnail" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.smallThumbnail" },
+                                {
+                                  "$op": "concat",
+                                  "values": [
+                                    "https://books.google.com/books/content?id=",
+                                    {
+                                      "$op": "encode",
+                                      "value": {
+                                        "$op": "string",
+                                        "value": { "$op": "path", "path": "book.id" }
+                                      }
+                                    },
+                                    "&printsec=frontcover&img=1&zoom=2&source=gbs_api"
+                                  ]
+                                }
+                              ]
+                            },
+                            "separator": "://",
+                            "index": 1
+                          }
                         ]
                       },
                       "publishedYear": {
@@ -547,7 +567,8 @@
                 }
               },
               "printType": "books",
-              "projection": "lite",
+              "projection": "full",
+              "filter": "ebooks",
               "showPreorders": "true",
               "langRestrict": {
                 "$op": "path",
@@ -647,18 +668,37 @@
                       "coverUrl": {
                         "$op": "concat",
                         "values": [
-                          "https://books.google.com/books/content?id=",
+                          "https://",
                           {
-                            "$op": "encode",
+                            "$op": "split",
                             "value": {
-                              "$op": "string",
-                              "value": {
-                                "$op": "path",
-                                "path": "book.id"
-                              }
-                            }
-                          },
-                          "&printsec=frontcover&img=1&zoom=2&source=gbs_api"
+                              "$op": "coalesce",
+                              "values": [
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.extraLarge" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.large" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.medium" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.small" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.thumbnail" },
+                                { "$op": "path", "path": "book.volumeInfo.imageLinks.smallThumbnail" },
+                                {
+                                  "$op": "concat",
+                                  "values": [
+                                    "https://books.google.com/books/content?id=",
+                                    {
+                                      "$op": "encode",
+                                      "value": {
+                                        "$op": "string",
+                                        "value": { "$op": "path", "path": "book.id" }
+                                      }
+                                    },
+                                    "&printsec=frontcover&img=1&zoom=2&source=gbs_api"
+                                  ]
+                                }
+                              ]
+                            },
+                            "separator": "://",
+                            "index": 1
+                          }
                         ]
                       },
                       "publishedYear": {

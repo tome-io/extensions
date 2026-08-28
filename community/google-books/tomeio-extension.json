@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.google-books",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "Google Books",
   "description": "Google Books topic discovery, search, metadata, regional prices, and source links.",
   "author": "Tomeio community",
