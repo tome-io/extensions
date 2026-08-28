@@ -14,3 +14,16 @@ Install it from Tomeio's **Add-ons → Community** view.
 
 The add-on manifest uses the Moon+ Reader icon published with the app's official
 Google Play listing. Moon+ Reader and its branding belong to their respective owner.
+
+## Implementation boundary
+
+This repository currently owns the reviewed manifest, configuration schema, declared
+library action, and community-registry entry. The device implementation is a Tomeio
+host adapter because it needs Android Storage Access Framework access, ZIP and SQLite
+backup parsing, and an Android package intent. That adapter ships in compatible Tomeio
+clients but is only activated while this add-on is installed.
+
+This means the add-on is installable and permission-gated, but its Moon+ Reader-specific
+device logic is not yet independently downloadable. Moving that logic into a generic,
+declarative device-capability workflow is required before this can be considered fully
+external to the app.
