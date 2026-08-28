@@ -13,6 +13,10 @@
         "sqlite.read",
         "android.preferences.read",
         "android.open-file"
+      ],
+      "androidPackages": [
+        "com.flyersoft.moonreaderp",
+        "com.flyersoft.moonreader"
       ]
     }
   ]

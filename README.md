@@ -16,7 +16,7 @@ declared capabilities have been reviewed for in-app community discovery.
 - its HTTPS manifest and repository URLs;
 - the minimum compatible Tomeio version;
 - when it was last reviewed;
-- any reviewed device capabilities it may invoke.
+- any reviewed device capabilities and Android packages it may invoke.
 
 The app downloads the registry, validates every manifest with the Tomeio protocol, and
 then displays the entries under the Community filter. Installing a community add-on
