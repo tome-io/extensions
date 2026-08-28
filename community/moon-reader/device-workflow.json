@@ -39,6 +39,7 @@
         },
         {
           "id": "preferences",
+          "optional": true,
           "when": { "$op": "path", "path": "steps.positions.text" },
           "operation": {
             "kind": "android.preferences.parse",
@@ -60,6 +61,7 @@
         },
         {
           "id": "sqlite",
+          "optional": true,
           "when": { "$op": "path", "path": "steps.database.bytes" },
           "operation": {
             "kind": "sqlite.query",
@@ -438,7 +440,9 @@
           "$op": "compact",
           "value": [
             { "$op": "path", "path": "steps.positions.error" },
-            { "$op": "path", "path": "steps.database.error" }
+            { "$op": "path", "path": "steps.preferences.error" },
+            { "$op": "path", "path": "steps.database.error" },
+            { "$op": "path", "path": "steps.sqlite.error" }
           ]
         }
       }

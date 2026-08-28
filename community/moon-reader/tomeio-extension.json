@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.moon-reader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "name": "Moon+ Reader",
   "description": "Imports Moon+ Reader progress and opens local books in Moon+ Reader.",
   "author": "Tomeio community",
