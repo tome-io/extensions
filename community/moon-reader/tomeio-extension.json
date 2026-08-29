@@ -1,24 +1,16 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.moon-reader",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "name": "Moon+ Reader",
-  "description": "Imports Moon+ Reader progress and opens local books in Moon+ Reader.",
+  "description": "Opens local books in Moon+ Reader.",
   "author": "Tomeio community",
   "icon": "https://play-lh.googleusercontent.com/bhF9KcXvINTlxLCqvHRXWmQyGgRQ-7e7KZq9U4VkSaVFHPPNS7FGX34qwl32yokVjOxQpmopCg8Y60zygJPG=s512-rw",
   "homepage": "https://www.moondownload.com/",
   "repository": "https://github.com/tome-io/extensions/tree/main/community/moon-reader",
   "types": ["book"],
-  "resources": [{ "name": "reader" }, { "name": "libraryAction" }],
-  "config": [
-    {
-      "key": "backup_directory",
-      "type": "directory",
-      "title": "Moon+ Reader backup folder",
-      "required": true
-    }
-  ],
-  "behaviorHints": { "configurable": true, "configurationRequired": true },
+  "resources": [{ "name": "libraryAction" }],
+  "behaviorHints": { "configurable": false, "configurationRequired": false },
   "libraryActions": [
     {
       "id": "open",
@@ -34,13 +26,7 @@
   },
   "permissions": {
     "hosts": ["https://raw.githubusercontent.com"],
-    "device": [
-      "directory.read",
-      "archive.read",
-      "sqlite.read",
-      "android.preferences.read",
-      "android.open-file"
-    ],
+    "device": ["android.open-file"],
     "androidPackages": [
       "com.flyersoft.moonreaderp",
       "com.flyersoft.moonreader"

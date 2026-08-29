@@ -27,7 +27,8 @@ add-on.
 
 Reviewed device add-ons, such as Moon+ Reader, live in this repository with their
 manifest and JSON workflow. Tomeio core exposes generic, permissioned device primitives;
-reader-specific parsing and behavior remain here and are dormant until installation.
+reader-specific actions remain here and are dormant until installation. Reader progress
+sync belongs to Tomeio's first-party sync service, not an add-on backup importer.
 
 Hosted add-ons keep their TypeScript source and deployment in their own repositories.
 After review, this registry points to their published manifest; it never executes source
