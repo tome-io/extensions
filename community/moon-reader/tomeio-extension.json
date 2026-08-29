@@ -1,15 +1,15 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.moon-reader",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "name": "Moon+ Reader",
-  "description": "Opens local books in Moon+ Reader.",
+  "description": "Opens local books in Moon+ Reader and imports Moon+ backup files.",
   "author": "Tomeio community",
   "icon": "https://play-lh.googleusercontent.com/bhF9KcXvINTlxLCqvHRXWmQyGgRQ-7e7KZq9U4VkSaVFHPPNS7FGX34qwl32yokVjOxQpmopCg8Y60zygJPG=s512-rw",
   "homepage": "https://www.moondownload.com/",
   "repository": "https://github.com/tome-io/extensions/tree/main/community/moon-reader",
   "types": ["book"],
-  "resources": [{ "name": "libraryAction" }],
+  "resources": [{ "name": "libraryAction" }, { "name": "libraryImport" }],
   "behaviorHints": { "configurable": false, "configurationRequired": false },
   "libraryActions": [
     {
@@ -20,13 +20,28 @@
       "requires": { "localFile": true, "platforms": ["android"] }
     }
   ],
+  "libraryImports": [
+    {
+      "id": "backup",
+      "title": "Import Moon+ Reader backup",
+      "description": "Import books, progress, and reading statistics from a local .mrpro backup.",
+      "icon": "file-plus",
+      "fileExtensions": ["mrpro"],
+      "platforms": ["android", "ios"]
+    }
+  ],
   "transport": {
     "kind": "device",
     "definitionUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/moon-reader/device-workflow.json"
   },
   "permissions": {
     "hosts": ["https://raw.githubusercontent.com"],
-    "device": ["android.open-file"],
+    "device": [
+      "archive.read",
+      "sqlite.read",
+      "android.preferences.read",
+      "android.open-file"
+    ],
     "androidPackages": [
       "com.flyersoft.moonreaderp",
       "com.flyersoft.moonreader"

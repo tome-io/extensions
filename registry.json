@@ -7,7 +7,12 @@
       "repositoryUrl": "https://github.com/tome-io/extensions/tree/main/community/moon-reader",
       "minimumClientVersion": "1.0.0",
       "reviewedAt": "2026-08-28T00:00:00Z",
-      "deviceCapabilities": ["android.open-file"],
+      "deviceCapabilities": [
+        "archive.read",
+        "sqlite.read",
+        "android.preferences.read",
+        "android.open-file"
+      ],
       "androidPackages": [
         "com.flyersoft.moonreaderp",
         "com.flyersoft.moonreader"

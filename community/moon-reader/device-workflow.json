@@ -1,6 +1,157 @@
 {
   "deviceWorkflowVersion": 1,
   "resources": {
+    "libraryImport": {
+      "steps": [
+        {
+          "id": "index",
+          "operation": {
+            "kind": "archive.read",
+            "archive": { "$op": "path", "path": "input.sourceUri" },
+            "entry": { "suffix": "/_names.list" },
+            "response": "text"
+          }
+        },
+        {
+          "id": "database",
+          "operation": {
+            "kind": "archive.read",
+            "archive": { "$op": "path", "path": "input.sourceUri" },
+            "entry": {
+              "indexed": { "$op": "path", "path": "steps.index" },
+              "targetSuffix": "/databases/mrbooks.db",
+              "entryExtension": ".tag"
+            },
+            "response": "bytes"
+          }
+        },
+        {
+          "id": "positions-file",
+          "operation": {
+            "kind": "archive.read",
+            "archive": { "$op": "path", "path": "input.sourceUri" },
+            "entry": {
+              "indexed": { "$op": "path", "path": "steps.index" },
+              "targetSuffix": "/shared_prefs/positions10.xml",
+              "entryExtension": ".tag"
+            },
+            "response": "text"
+          }
+        },
+        {
+          "id": "catalog",
+          "operation": {
+            "kind": "sqlite.query",
+            "database": { "$op": "path", "path": "steps.database" },
+            "queries": {
+              "books": "SELECT b.book, b.filename, b.author, b.addTime, s.usedTime, s.readWords, s.dates FROM books AS b LEFT JOIN statistics AS s ON s.filename = b.filename"
+            }
+          }
+        },
+        {
+          "id": "positions",
+          "operation": {
+            "kind": "android.preferences.parse",
+            "text": { "$op": "path", "path": "steps.positions-file" }
+          }
+        }
+      ],
+      "output": {
+        "books": {
+          "$op": "map",
+          "value": {
+            "$op": "filter",
+            "value": { "$op": "path", "path": "steps.catalog.books" },
+            "as": "candidate",
+            "values": [{ "$op": "path", "path": "candidate.filename" }]
+          },
+          "as": "book",
+          "values": [
+            {
+              "sourceId": {
+                "$op": "lowercase",
+                "value": {
+                  "$op": "basename",
+                  "value": { "$op": "path", "path": "book.filename" }
+                }
+              },
+              "title": {
+                "$op": "coalesce",
+                "values": [
+                  { "$op": "trim", "value": { "$op": "path", "path": "book.book" } },
+                  { "$op": "fileStem", "value": { "$op": "path", "path": "book.filename" } }
+                ]
+              },
+              "authors": [
+                {
+                  "$op": "coalesce",
+                  "values": [
+                    {
+                      "$op": "trim",
+                      "value": {
+                        "$op": "split",
+                        "value": { "$op": "path", "path": "book.author" },
+                        "separator": ";",
+                        "index": 0
+                      }
+                    },
+                    "Unknown"
+                  ]
+                }
+              ],
+              "identifiers": {},
+              "format": {
+                "$op": "uppercase",
+                "value": {
+                  "$op": "fileExtension",
+                  "value": { "$op": "path", "path": "book.filename" }
+                }
+              },
+              "sourceFilename": {
+                "$op": "basename",
+                "value": { "$op": "path", "path": "book.filename" }
+              },
+              "sourcePath": { "$op": "path", "path": "book.filename" },
+              "addedAt": {
+                "$op": "number",
+                "value": { "$op": "path", "path": "book.addTime" }
+              },
+              "progress": {
+                "$op": "max",
+                "value": [
+                  {
+                    "$op": "percent",
+                    "value": {
+                      "$op": "lookup",
+                      "value": { "$op": "path", "path": "steps.positions.byBasename" },
+                      "by": {
+                        "$op": "lowercase",
+                        "value": {
+                          "$op": "basename",
+                          "value": { "$op": "path", "path": "book.filename" }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "$op": "percent",
+                    "value": { "$op": "path", "path": "book.dates" }
+                  }
+                ]
+              },
+              "readingTimeMs": {
+                "$op": "number",
+                "value": { "$op": "path", "path": "book.usedTime" }
+              },
+              "wordsRead": {
+                "$op": "number",
+                "value": { "$op": "path", "path": "book.readWords" }
+              }
+            }
+          ]
+        }
+      }
+    },
     "libraryAction": {
       "steps": [
         {
