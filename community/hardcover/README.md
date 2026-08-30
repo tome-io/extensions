@@ -2,7 +2,7 @@
 
 A reviewed declarative community add-on for [Hardcover](https://hardcover.app).
 
-It can act as Tomeio's Discovery, Search, Cover, and Reviews provider. Discovery includes Hardcover's weekly trending books and the team-curated Hidden Gem Fantasy, Romantasy, and Enemies to Lovers vibes. Returned books include Hardcover ratings and rating counts.
+It can act as Tomeio's Discovery, Search, Cover, and Reviews provider. Discovery includes Hardcover's weekly trending books and the team-curated Hidden Gem Fantasy, Romantasy, and Enemies to Lovers vibes. Returned books include Hardcover ratings, rating counts, and featured-series positions.
 
 ## Configuration
 

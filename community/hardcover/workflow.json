@@ -34,7 +34,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
               "query": "query TomeioTrending($duration: TrendingDuration!, $limit: Int!, $offset: Int!) { books_trending(duration: $duration, limit: $limit, offset: $offset) { ids } }",
@@ -139,7 +139,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
               "query": "query TomeioVibe($slug: String!) { vibes(where: { slug: { _eq: $slug }, privacy_setting_id: { _eq: 1 }, user: { username: { _eq: \"hardcover\" } } }, limit: 1) { cached_book_ids } }",
@@ -219,10 +219,10 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
-              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
+              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } book_series(order_by: [{ featured: desc }, { position: asc }], limit: 1) { position } } }",
               "variables": {
                 "ids": {
                   "$op": "coalesce",
@@ -547,6 +547,23 @@
                           "$op": "path",
                           "path": "book.ratings_count"
                         }
+                      },
+                      "seriesPosition": {
+                        "$op": "if",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "book.book_series.0.position"
+                          },
+                          {
+                            "$op": "number",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.book_series.0.position"
+                            }
+                          },
+                          null
+                        ]
                       },
                       "infoUrl": {
                         "$op": "concat",
@@ -715,7 +732,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -792,10 +809,10 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
-              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
+              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } book_series(order_by: [{ featured: desc }, { position: asc }], limit: 1) { position } } }",
               "variables": {
                 "ids": {
                   "$op": "path",
@@ -959,6 +976,23 @@
                           "path": "book.ratings_count"
                         }
                       },
+                      "seriesPosition": {
+                        "$op": "if",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "book.book_series.0.position"
+                          },
+                          {
+                            "$op": "number",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.book_series.0.position"
+                            }
+                          },
+                          null
+                        ]
+                      },
                       "infoUrl": {
                         "$op": "concat",
                         "values": [
@@ -1052,7 +1086,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -1147,10 +1181,10 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
-              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
+              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } book_series(order_by: [{ featured: desc }, { position: asc }], limit: 1) { position } } }",
               "variables": {
                 "ids": {
                   "$op": "if",
@@ -1394,6 +1428,23 @@
                           "path": "book.ratings_count"
                         }
                       },
+                      "seriesPosition": {
+                        "$op": "if",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "book.book_series.0.position"
+                          },
+                          {
+                            "$op": "number",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.book_series.0.position"
+                            }
+                          },
+                          null
+                        ]
+                      },
                       "infoUrl": {
                         "$op": "concat",
                         "values": [
@@ -1446,7 +1497,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -1548,7 +1599,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.3"
             },
             "json": {
               "query": "query TomeioReviews($bookId: Int!, $limit: Int!, $offset: Int!) { user_books(where: { book_id: { _eq: $bookId }, has_review: { _eq: true }, privacy_setting_id: { _eq: 1 } }, order_by: [{ likes_count: desc }, { reviewed_at: desc }], limit: $limit, offset: $offset) { id rating review review_markdown review_has_spoilers reviewed_at likes_count user { name username avatarUrl: cached_image(path: \"url\") } } }",
