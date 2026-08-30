@@ -1,0 +1,1917 @@
+{
+  "workflowVersion": 1,
+  "resources": {
+    "catalog": {
+      "steps": [
+        {
+          "id": "trending",
+          "when": {
+            "$op": "not",
+            "value": {
+              "$op": "in",
+              "values": [
+                {
+                  "$op": "path",
+                  "path": "input.catalogId",
+                  "default": "trending-week"
+                },
+                [
+                  "top-picks",
+                  "featured-vibe"
+                ]
+              ]
+            }
+          },
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioTrending($duration: TrendingDuration!, $limit: Int!, $offset: Int!) { books_trending(duration: $duration, limit: $limit, offset: $offset) { ids } }",
+              "variables": {
+                "duration": {
+                  "$op": "if",
+                  "values": [
+                    {
+                      "$op": "equals",
+                      "values": [
+                        {
+                          "$op": "path",
+                          "path": "input.catalogId",
+                          "default": "trending-week"
+                        },
+                        "trending-month"
+                      ]
+                    },
+                    "month",
+                    {
+                      "$op": "if",
+                      "values": [
+                        {
+                          "$op": "equals",
+                          "values": [
+                            {
+                              "$op": "path",
+                              "path": "input.catalogId",
+                              "default": "trending-week"
+                            },
+                            "trending-year"
+                          ]
+                        },
+                        "one_year",
+                        "week"
+                      ]
+                    }
+                  ]
+                },
+                "limit": {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 24
+                  }
+                },
+                "offset": {
+                  "$op": "multiply",
+                  "values": [
+                    {
+                      "$op": "add",
+                      "values": [
+                        {
+                          "$op": "number",
+                          "value": {
+                            "$op": "path",
+                            "path": "input.page",
+                            "default": 1
+                          }
+                        },
+                        -1
+                      ]
+                    },
+                    {
+                      "$op": "number",
+                      "value": {
+                        "$op": "path",
+                        "path": "input.limit",
+                        "default": 24
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.data.books_trending.error"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "me",
+          "when": {
+            "$op": "equals",
+            "values": [
+              {
+                "$op": "path",
+                "path": "input.catalogId",
+                "default": "trending-week"
+              },
+              "top-picks"
+            ]
+          },
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioMe { me(limit: 1) { id } }",
+              "variables": {}
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "top_picks",
+          "when": {
+            "$op": "equals",
+            "values": [
+              {
+                "$op": "path",
+                "path": "input.catalogId",
+                "default": "trending-week"
+              },
+              "top-picks"
+            ]
+          },
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioTopPicks($userId: Int!) { vibes(where: { user_id: { _eq: $userId }, vibe_type: { _eq: 3 } }, order_by: { updated_at: desc }, limit: 1) { cached_book_ids } }",
+              "variables": {
+                "userId": {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "steps.me.body.data.me.0.id"
+                  }
+                }
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "featured_vibe",
+          "when": {
+            "$op": "equals",
+            "values": [
+              {
+                "$op": "path",
+                "path": "input.catalogId",
+                "default": "trending-week"
+              },
+              "featured-vibe"
+            ]
+          },
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioFeaturedVibe { vibes(where: { featured: { _eq: true }, privacy_setting_id: { _eq: 1 } }, order_by: [{ featured_at: desc }, { likes_count: desc }], limit: 1) { cached_book_ids } }",
+              "variables": {}
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.data.search.error"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "books",
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
+              "variables": {
+                "ids": {
+                  "$op": "coalesce",
+                  "values": [
+                    {
+                      "$op": "path",
+                      "path": "steps.trending.body.data.books_trending.ids"
+                    },
+                    {
+                      "$op": "slice",
+                      "value": {
+                        "$op": "coalesce",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "steps.top_picks.body.data.vibes.0.cached_book_ids"
+                          },
+                          {
+                            "$op": "path",
+                            "path": "steps.featured_vibe.body.data.vibes.0.cached_book_ids"
+                          }
+                        ]
+                      },
+                      "values": [
+                        {
+                          "$op": "multiply",
+                          "values": [
+                            {
+                              "$op": "add",
+                              "values": [
+                                {
+                                  "$op": "number",
+                                  "value": {
+                                    "$op": "path",
+                                    "path": "input.page",
+                                    "default": 1
+                                  }
+                                },
+                                -1
+                              ]
+                            },
+                            {
+                              "$op": "number",
+                              "value": {
+                                "$op": "path",
+                                "path": "input.limit",
+                                "default": 24
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "$op": "add",
+                          "values": [
+                            {
+                              "$op": "multiply",
+                              "values": [
+                                {
+                                  "$op": "add",
+                                  "values": [
+                                    {
+                                      "$op": "number",
+                                      "value": {
+                                        "$op": "path",
+                                        "path": "input.page",
+                                        "default": 1
+                                      }
+                                    },
+                                    -1
+                                  ]
+                                },
+                                {
+                                  "$op": "number",
+                                  "value": {
+                                    "$op": "path",
+                                    "path": "input.limit",
+                                    "default": 24
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "$op": "number",
+                              "value": {
+                                "$op": "path",
+                                "path": "input.limit",
+                                "default": 24
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    []
+                  ]
+                }
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "output": {
+        "items": {
+          "$op": "compact",
+          "value": {
+            "$op": "map",
+            "value": {
+              "$op": "sortByOrder",
+              "value": {
+                "$op": "path",
+                "path": "steps.books.body.data.books",
+                "default": []
+              },
+              "as": "book",
+              "by": {
+                "$op": "path",
+                "path": "book.id"
+              },
+              "values": [
+                {
+                  "$op": "coalesce",
+                  "values": [
+                    {
+                      "$op": "path",
+                      "path": "steps.trending.body.data.books_trending.ids"
+                    },
+                    {
+                      "$op": "slice",
+                      "value": {
+                        "$op": "coalesce",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "steps.top_picks.body.data.vibes.0.cached_book_ids"
+                          },
+                          {
+                            "$op": "path",
+                            "path": "steps.featured_vibe.body.data.vibes.0.cached_book_ids"
+                          }
+                        ]
+                      },
+                      "values": [
+                        {
+                          "$op": "multiply",
+                          "values": [
+                            {
+                              "$op": "add",
+                              "values": [
+                                {
+                                  "$op": "number",
+                                  "value": {
+                                    "$op": "path",
+                                    "path": "input.page",
+                                    "default": 1
+                                  }
+                                },
+                                -1
+                              ]
+                            },
+                            {
+                              "$op": "number",
+                              "value": {
+                                "$op": "path",
+                                "path": "input.limit",
+                                "default": 24
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "$op": "add",
+                          "values": [
+                            {
+                              "$op": "multiply",
+                              "values": [
+                                {
+                                  "$op": "add",
+                                  "values": [
+                                    {
+                                      "$op": "number",
+                                      "value": {
+                                        "$op": "path",
+                                        "path": "input.page",
+                                        "default": 1
+                                      }
+                                    },
+                                    -1
+                                  ]
+                                },
+                                {
+                                  "$op": "number",
+                                  "value": {
+                                    "$op": "path",
+                                    "path": "input.limit",
+                                    "default": 24
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "$op": "number",
+                              "value": {
+                                "$op": "path",
+                                "path": "input.limit",
+                                "default": 24
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    []
+                  ]
+                }
+              ]
+            },
+            "as": "book",
+            "values": [
+              {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "and",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "book.id"
+                      },
+                      {
+                        "$op": "path",
+                        "path": "book.title"
+                      }
+                    ]
+                  },
+                  {
+                    "$op": "compact",
+                    "value": {
+                      "id": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.id"
+                        }
+                      },
+                      "title": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.title"
+                        }
+                      },
+                      "authors": {
+                        "$op": "map",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.contributions",
+                          "default": []
+                        },
+                        "as": "contribution",
+                        "values": [
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "contribution.author.name"
+                            }
+                          }
+                        ]
+                      },
+                      "description": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.description"
+                        }
+                      },
+                      "coverUrl": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.image.url"
+                        }
+                      },
+                      "publishedYear": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "split",
+                          "value": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.release_date"
+                            }
+                          },
+                          "separator": "-",
+                          "index": 0
+                        }
+                      },
+                      "subjects": [],
+                      "identifiers": {
+                        "$op": "compact",
+                        "value": {
+                          "hardcover": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.id"
+                            }
+                          }
+                        }
+                      },
+                      "rating": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.rating"
+                        }
+                      },
+                      "ratingsCount": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.ratings_count"
+                        }
+                      },
+                      "infoUrl": {
+                        "$op": "concat",
+                        "values": [
+                          "https://hardcover.app/books/",
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.slug"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  null
+                ]
+              }
+            ]
+          }
+        },
+        "nextPage": {
+          "$op": "if",
+          "values": [
+            {
+              "$op": "lessThan",
+              "values": [
+                {
+                  "$op": "length",
+                  "value": {
+                    "$op": "coalesce",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "steps.trending.body.data.books_trending.ids"
+                      },
+                      {
+                        "$op": "slice",
+                        "value": {
+                          "$op": "coalesce",
+                          "values": [
+                            {
+                              "$op": "path",
+                              "path": "steps.top_picks.body.data.vibes.0.cached_book_ids"
+                            },
+                            {
+                              "$op": "path",
+                              "path": "steps.featured_vibe.body.data.vibes.0.cached_book_ids"
+                            }
+                          ]
+                        },
+                        "values": [
+                          {
+                            "$op": "multiply",
+                            "values": [
+                              {
+                                "$op": "add",
+                                "values": [
+                                  {
+                                    "$op": "number",
+                                    "value": {
+                                      "$op": "path",
+                                      "path": "input.page",
+                                      "default": 1
+                                    }
+                                  },
+                                  -1
+                                ]
+                              },
+                              {
+                                "$op": "number",
+                                "value": {
+                                  "$op": "path",
+                                  "path": "input.limit",
+                                  "default": 24
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "$op": "add",
+                            "values": [
+                              {
+                                "$op": "multiply",
+                                "values": [
+                                  {
+                                    "$op": "add",
+                                    "values": [
+                                      {
+                                        "$op": "number",
+                                        "value": {
+                                          "$op": "path",
+                                          "path": "input.page",
+                                          "default": 1
+                                        }
+                                      },
+                                      -1
+                                    ]
+                                  },
+                                  {
+                                    "$op": "number",
+                                    "value": {
+                                      "$op": "path",
+                                      "path": "input.limit",
+                                      "default": 24
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "$op": "number",
+                                "value": {
+                                  "$op": "path",
+                                  "path": "input.limit",
+                                  "default": 24
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      []
+                    ]
+                  }
+                },
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 24
+                  }
+                }
+              ]
+            },
+            null,
+            {
+              "$op": "add",
+              "values": [
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.page",
+                    "default": 1
+                  }
+                },
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "search": {
+      "steps": [
+        {
+          "id": "search",
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
+              "variables": {
+                "query": {
+                  "$op": "trim",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.query"
+                  }
+                },
+                "page": {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.page",
+                    "default": 1
+                  }
+                },
+                "limit": {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 24
+                  }
+                }
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.data.search.error"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "books",
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
+              "variables": {
+                "ids": {
+                  "$op": "path",
+                  "path": "steps.search.body.data.search.ids",
+                  "default": []
+                }
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "output": {
+        "items": {
+          "$op": "compact",
+          "value": {
+            "$op": "map",
+            "value": {
+              "$op": "sortByOrder",
+              "value": {
+                "$op": "path",
+                "path": "steps.books.body.data.books",
+                "default": []
+              },
+              "as": "book",
+              "by": {
+                "$op": "path",
+                "path": "book.id"
+              },
+              "values": [
+                {
+                  "$op": "path",
+                  "path": "steps.search.body.data.search.ids",
+                  "default": []
+                }
+              ]
+            },
+            "as": "book",
+            "values": [
+              {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "and",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "book.id"
+                      },
+                      {
+                        "$op": "path",
+                        "path": "book.title"
+                      }
+                    ]
+                  },
+                  {
+                    "$op": "compact",
+                    "value": {
+                      "id": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.id"
+                        }
+                      },
+                      "title": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.title"
+                        }
+                      },
+                      "authors": {
+                        "$op": "map",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.contributions",
+                          "default": []
+                        },
+                        "as": "contribution",
+                        "values": [
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "contribution.author.name"
+                            }
+                          }
+                        ]
+                      },
+                      "description": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.description"
+                        }
+                      },
+                      "coverUrl": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.image.url"
+                        }
+                      },
+                      "publishedYear": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "split",
+                          "value": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.release_date"
+                            }
+                          },
+                          "separator": "-",
+                          "index": 0
+                        }
+                      },
+                      "subjects": [],
+                      "identifiers": {
+                        "$op": "compact",
+                        "value": {
+                          "hardcover": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.id"
+                            }
+                          }
+                        }
+                      },
+                      "rating": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.rating"
+                        }
+                      },
+                      "ratingsCount": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.ratings_count"
+                        }
+                      },
+                      "infoUrl": {
+                        "$op": "concat",
+                        "values": [
+                          "https://hardcover.app/books/",
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.slug"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  null
+                ]
+              }
+            ]
+          }
+        },
+        "nextPage": {
+          "$op": "if",
+          "values": [
+            {
+              "$op": "lessThan",
+              "values": [
+                {
+                  "$op": "length",
+                  "value": {
+                    "$op": "path",
+                    "path": "steps.search.body.data.search.ids",
+                    "default": []
+                  }
+                },
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 24
+                  }
+                }
+              ]
+            },
+            null,
+            {
+              "$op": "add",
+              "values": [
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.page",
+                    "default": 1
+                  }
+                },
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "resolve": {
+      "steps": [
+        {
+          "id": "locate",
+          "when": {
+            "$op": "not",
+            "value": {
+              "$op": "path",
+              "path": "input.book.identifiers.hardcover"
+            }
+          },
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
+              "variables": {
+                "query": {
+                  "$op": "coalesce",
+                  "values": [
+                    {
+                      "$op": "trim",
+                      "value": {
+                        "$op": "path",
+                        "path": "input.book.identifiers.isbn13"
+                      }
+                    },
+                    {
+                      "$op": "trim",
+                      "value": {
+                        "$op": "path",
+                        "path": "input.book.identifiers.isbn10"
+                      }
+                    },
+                    {
+                      "$op": "trim",
+                      "value": {
+                        "$op": "concat",
+                        "values": [
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "input.book.title"
+                            }
+                          },
+                          " ",
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "first",
+                              "value": {
+                                "$op": "path",
+                                "path": "input.book.authors",
+                                "default": []
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "page": 1,
+                "limit": 1
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "books",
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
+              "variables": {
+                "ids": {
+                  "$op": "array",
+                  "value": {
+                    "$op": "number",
+                    "value": {
+                      "$op": "coalesce",
+                      "values": [
+                        {
+                          "$op": "path",
+                          "path": "input.book.identifiers.hardcover"
+                        },
+                        {
+                          "$op": "path",
+                          "path": "steps.locate.body.data.search.ids.0"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "output": {
+        "items": {
+          "$op": "compact",
+          "value": {
+            "$op": "map",
+            "value": {
+              "$op": "sortByOrder",
+              "value": {
+                "$op": "path",
+                "path": "steps.books.body.data.books",
+                "default": []
+              },
+              "as": "book",
+              "by": {
+                "$op": "path",
+                "path": "book.id"
+              },
+              "values": [
+                {
+                  "$op": "array",
+                  "value": {
+                    "$op": "number",
+                    "value": {
+                      "$op": "coalesce",
+                      "values": [
+                        {
+                          "$op": "path",
+                          "path": "input.book.identifiers.hardcover"
+                        },
+                        {
+                          "$op": "path",
+                          "path": "steps.locate.body.data.search.ids.0"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "as": "book",
+            "values": [
+              {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "and",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "book.id"
+                      },
+                      {
+                        "$op": "path",
+                        "path": "book.title"
+                      }
+                    ]
+                  },
+                  {
+                    "$op": "compact",
+                    "value": {
+                      "id": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.id"
+                        }
+                      },
+                      "title": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.title"
+                        }
+                      },
+                      "authors": {
+                        "$op": "map",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.contributions",
+                          "default": []
+                        },
+                        "as": "contribution",
+                        "values": [
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "contribution.author.name"
+                            }
+                          }
+                        ]
+                      },
+                      "description": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.description"
+                        }
+                      },
+                      "coverUrl": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.image.url"
+                        }
+                      },
+                      "publishedYear": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "split",
+                          "value": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.release_date"
+                            }
+                          },
+                          "separator": "-",
+                          "index": 0
+                        }
+                      },
+                      "subjects": [],
+                      "identifiers": {
+                        "$op": "compact",
+                        "value": {
+                          "hardcover": {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.id"
+                            }
+                          }
+                        }
+                      },
+                      "rating": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.rating"
+                        }
+                      },
+                      "ratingsCount": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "book.ratings_count"
+                        }
+                      },
+                      "infoUrl": {
+                        "$op": "concat",
+                        "values": [
+                          "https://hardcover.app/books/",
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "book.slug"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  null
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "reviews": {
+      "steps": [
+        {
+          "id": "locate",
+          "when": {
+            "$op": "not",
+            "value": {
+              "$op": "path",
+              "path": "input.book.identifiers.hardcover"
+            }
+          },
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
+              "variables": {
+                "query": {
+                  "$op": "coalesce",
+                  "values": [
+                    {
+                      "$op": "trim",
+                      "value": {
+                        "$op": "path",
+                        "path": "input.book.identifiers.isbn13"
+                      }
+                    },
+                    {
+                      "$op": "trim",
+                      "value": {
+                        "$op": "path",
+                        "path": "input.book.identifiers.isbn10"
+                      }
+                    },
+                    {
+                      "$op": "trim",
+                      "value": {
+                        "$op": "concat",
+                        "values": [
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "path",
+                              "path": "input.book.title"
+                            }
+                          },
+                          " ",
+                          {
+                            "$op": "string",
+                            "value": {
+                              "$op": "first",
+                              "value": {
+                                "$op": "path",
+                                "path": "input.book.authors",
+                                "default": []
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "page": 1,
+                "limit": 1
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.data.search.error"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "reviews",
+          "request": {
+            "urls": "https://api.hardcover.app/v1/graphql",
+            "method": "POST",
+            "headers": {
+              "Accept": "application/json",
+              "Authorization": {
+                "$op": "concat",
+                "values": [
+                  "Bearer ",
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "path",
+                      "path": "config.api_token"
+                    }
+                  }
+                ]
+              },
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+            },
+            "json": {
+              "query": "query TomeioReviews($bookId: Int!, $limit: Int!, $offset: Int!) { user_books(where: { book_id: { _eq: $bookId }, has_review: { _eq: true }, privacy_setting_id: { _eq: 1 } }, order_by: [{ likes_count: desc }, { reviewed_at: desc }], limit: $limit, offset: $offset) { id rating review review_markdown review_has_spoilers reviewed_at likes_count user { name username avatarUrl: cached_image(path: \"url\") } } }",
+              "variables": {
+                "bookId": {
+                  "$op": "number",
+                  "value": {
+                    "$op": "coalesce",
+                    "values": [
+                      {
+                        "$op": "path",
+                        "path": "input.book.identifiers.hardcover"
+                      },
+                      {
+                        "$op": "path",
+                        "path": "steps.locate.body.data.search.ids.0"
+                      }
+                    ]
+                  }
+                },
+                "limit": {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 10
+                  }
+                },
+                "offset": {
+                  "$op": "multiply",
+                  "values": [
+                    {
+                      "$op": "add",
+                      "values": [
+                        {
+                          "$op": "number",
+                          "value": {
+                            "$op": "path",
+                            "path": "input.page",
+                            "default": 1
+                          }
+                        },
+                        -1
+                      ]
+                    },
+                    {
+                      "$op": "number",
+                      "value": {
+                        "$op": "path",
+                        "path": "input.limit",
+                        "default": 10
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "response": "json",
+            "timeoutMs": 10000
+          },
+          "accept": {
+            "$op": "and",
+            "values": [
+              {
+                "$op": "path",
+                "path": "response.ok"
+              },
+              {
+                "$op": "not",
+                "value": {
+                  "$op": "path",
+                  "path": "response.body.errors"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "output": {
+        "items": {
+          "$op": "compact",
+          "value": {
+            "$op": "map",
+            "value": {
+              "$op": "path",
+              "path": "steps.reviews.body.data.user_books",
+              "default": []
+            },
+            "as": "review",
+            "values": [
+              {
+                "$op": "if",
+                "values": [
+                  {
+                    "$op": "trim",
+                    "value": {
+                      "$op": "coalesce",
+                      "values": [
+                        {
+                          "$op": "path",
+                          "path": "review.review"
+                        },
+                        {
+                          "$op": "path",
+                          "path": "review.review_markdown"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "$op": "compact",
+                    "value": {
+                      "id": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "review.id"
+                        }
+                      },
+                      "author": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "coalesce",
+                          "values": [
+                            {
+                              "$op": "path",
+                              "path": "review.user.name"
+                            },
+                            {
+                              "$op": "path",
+                              "path": "review.user.username"
+                            },
+                            "Hardcover reader"
+                          ]
+                        }
+                      },
+                      "text": {
+                        "$op": "trim",
+                        "value": {
+                          "$op": "coalesce",
+                          "values": [
+                            {
+                              "$op": "path",
+                              "path": "review.review"
+                            },
+                            {
+                              "$op": "path",
+                              "path": "review.review_markdown"
+                            }
+                          ]
+                        }
+                      },
+                      "rating": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "review.rating"
+                        }
+                      },
+                      "reviewedAt": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "review.reviewed_at"
+                        }
+                      },
+                      "containsSpoilers": {
+                        "$op": "path",
+                        "path": "review.review_has_spoilers"
+                      },
+                      "likesCount": {
+                        "$op": "number",
+                        "value": {
+                          "$op": "path",
+                          "path": "review.likes_count"
+                        }
+                      },
+                      "authorAvatarUrl": {
+                        "$op": "string",
+                        "value": {
+                          "$op": "path",
+                          "path": "review.user.avatarUrl"
+                        }
+                      },
+                      "authorUrl": {
+                        "$op": "if",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "review.user.username"
+                          },
+                          {
+                            "$op": "concat",
+                            "values": [
+                              "https://hardcover.app/@",
+                              {
+                                "$op": "string",
+                                "value": {
+                                  "$op": "path",
+                                  "path": "review.user.username"
+                                }
+                              }
+                            ]
+                          },
+                          null
+                        ]
+                      }
+                    }
+                  },
+                  null
+                ]
+              }
+            ]
+          }
+        },
+        "nextPage": {
+          "$op": "if",
+          "values": [
+            {
+              "$op": "lessThan",
+              "values": [
+                {
+                  "$op": "length",
+                  "value": {
+                    "$op": "path",
+                    "path": "steps.reviews.body.data.user_books",
+                    "default": []
+                  }
+                },
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.limit",
+                    "default": 10
+                  }
+                }
+              ]
+            },
+            null,
+            {
+              "$op": "add",
+              "values": [
+                {
+                  "$op": "number",
+                  "value": {
+                    "$op": "path",
+                    "path": "input.page",
+                    "default": 1
+                  }
+                },
+                1
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

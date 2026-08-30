@@ -1,0 +1,89 @@
+{
+  "manifestVersion": 1,
+  "id": "community.tomeio.hardcover",
+  "version": "0.1.0",
+  "name": "Hardcover",
+  "description": "Hardcover trending, personalized vibes, search, ratings, covers, and reader reviews.",
+  "author": "Tomeio community",
+  "homepage": "https://hardcover.app",
+  "repository": "https://github.com/tome-io/extensions/tree/main/community/hardcover",
+  "types": [
+    "book"
+  ],
+  "resources": [
+    {
+      "name": "catalog",
+      "supportsPagination": true
+    },
+    {
+      "name": "search",
+      "supportsPagination": true
+    },
+    {
+      "name": "resolve"
+    },
+    {
+      "name": "reviews",
+      "supportsPagination": true
+    }
+  ],
+  "providerRoles": [
+    "discovery",
+    "search",
+    "cover",
+    "reviews"
+  ],
+  "catalogs": [
+    {
+      "id": "trending-week",
+      "name": "Trending this week",
+      "resource": "catalog"
+    },
+    {
+      "id": "trending-month",
+      "name": "Trending this month",
+      "resource": "catalog"
+    },
+    {
+      "id": "trending-year",
+      "name": "Trending this year",
+      "resource": "catalog"
+    },
+    {
+      "id": "top-picks",
+      "name": "Your Hardcover top picks",
+      "resource": "catalog"
+    },
+    {
+      "id": "featured-vibe",
+      "name": "Featured Hardcover vibe",
+      "resource": "catalog"
+    }
+  ],
+  "config": [
+    {
+      "key": "api_token",
+      "type": "password",
+      "title": "Hardcover read-only API token",
+      "required": true
+    }
+  ],
+  "behaviorHints": {
+    "configurable": true,
+    "configurationRequired": true
+  },
+  "attribution": {
+    "label": "Data from Hardcover",
+    "url": "https://hardcover.app"
+  },
+  "transport": {
+    "kind": "declarative",
+    "definitionUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/hardcover/workflow.json"
+  },
+  "permissions": {
+    "hosts": [
+      "https://raw.githubusercontent.com",
+      "https://api.hardcover.app"
+    ]
+  }
+}
