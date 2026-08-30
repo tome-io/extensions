@@ -1,9 +1,9 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.hardcover",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Hardcover",
-  "description": "Hardcover trending, personalized vibes, search, ratings, covers, and reader reviews.",
+  "description": "Hardcover trending, curated vibes, search, ratings, covers, and reader reviews.",
   "author": "Tomeio community",
   "homepage": "https://hardcover.app",
   "repository": "https://github.com/tome-io/extensions/tree/main/community/hardcover",
@@ -40,23 +40,18 @@
       "resource": "catalog"
     },
     {
-      "id": "trending-month",
-      "name": "Trending this month",
+      "id": "vibe-hidden-gem-fantasy",
+      "name": "Hidden Gem Fantasy",
       "resource": "catalog"
     },
     {
-      "id": "trending-year",
-      "name": "Trending this year",
+      "id": "vibe-romantasy",
+      "name": "Romantasy",
       "resource": "catalog"
     },
     {
-      "id": "top-picks",
-      "name": "Your Hardcover top picks",
-      "resource": "catalog"
-    },
-    {
-      "id": "featured-vibe",
-      "name": "Featured Hardcover vibe",
+      "id": "vibe-enemies-to-lovers",
+      "name": "Enemies to Lovers",
       "resource": "catalog"
     }
   ],

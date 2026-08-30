@@ -2,15 +2,13 @@
 
 A reviewed declarative community add-on for [Hardcover](https://hardcover.app).
 
-It can act as Tomeio's Discovery, Search, Cover, and Reviews provider. Discovery includes Hardcover's weekly, monthly, and yearly trending books, the signed-in reader's Top Picks vibe, and the currently featured public vibe. Returned books include Hardcover ratings and rating counts.
+It can act as Tomeio's Discovery, Search, Cover, and Reviews provider. Discovery includes Hardcover's weekly trending books and the team-curated Hidden Gem Fantasy, Romantasy, and Enemies to Lovers vibes. Returned books include Hardcover ratings and rating counts.
 
 ## Configuration
 
-Create a dedicated Personal Access Token in [Hardcover API settings](https://hardcover.app/account/api/keys/new?scope=read%3Acatalog+read%3Ame+read%3Avibes%3Aprivate+read%3Avibes%3Apublic+read%3Alibrary%3Apublic+read%3Ausers) with only these read scopes:
+Create a dedicated Personal Access Token in [Hardcover API settings](https://hardcover.app/account/api/keys/new?scope=read%3Acatalog+read%3Avibes%3Apublic+read%3Alibrary%3Apublic+read%3Ausers) with only these read scopes:
 
 - `read:catalog`
-- `read:me`
-- `read:vibes:private`
 - `read:vibes:public`
 - `read:library:public`
 - `read:users`

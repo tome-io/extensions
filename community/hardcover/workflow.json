@@ -6,21 +6,15 @@
         {
           "id": "trending",
           "when": {
-            "$op": "not",
-            "value": {
-              "$op": "in",
-              "values": [
-                {
-                  "$op": "path",
-                  "path": "input.catalogId",
-                  "default": "trending-week"
-                },
-                [
-                  "top-picks",
-                  "featured-vibe"
-                ]
-              ]
-            }
+            "$op": "equals",
+            "values": [
+              {
+                "$op": "path",
+                "path": "input.catalogId",
+                "default": "trending-week"
+              },
+              "trending-week"
+            ]
           },
           "request": {
             "urls": "https://api.hardcover.app/v1/graphql",
@@ -40,7 +34,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioTrending($duration: TrendingDuration!, $limit: Int!, $offset: Int!) { books_trending(duration: $duration, limit: $limit, offset: $offset) { ids } }",
@@ -145,16 +139,20 @@
           }
         },
         {
-          "id": "me",
+          "id": "vibe",
           "when": {
-            "$op": "equals",
+            "$op": "in",
             "values": [
               {
                 "$op": "path",
                 "path": "input.catalogId",
                 "default": "trending-week"
               },
-              "top-picks"
+              [
+                "vibe-hidden-gem-fantasy",
+                "vibe-romantasy",
+                "vibe-enemies-to-lovers"
+              ]
             ]
           },
           "request": {
@@ -175,133 +173,45 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
-              "query": "query TomeioMe { me(limit: 1) { id } }",
-              "variables": {}
-            },
-            "response": "json",
-            "timeoutMs": 10000
-          },
-          "accept": {
-            "$op": "and",
-            "values": [
-              {
-                "$op": "path",
-                "path": "response.ok"
-              },
-              {
-                "$op": "not",
-                "value": {
-                  "$op": "path",
-                  "path": "response.body.errors"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "top_picks",
-          "when": {
-            "$op": "equals",
-            "values": [
-              {
-                "$op": "path",
-                "path": "input.catalogId",
-                "default": "trending-week"
-              },
-              "top-picks"
-            ]
-          },
-          "request": {
-            "urls": "https://api.hardcover.app/v1/graphql",
-            "method": "POST",
-            "headers": {
-              "Accept": "application/json",
-              "Authorization": {
-                "$op": "concat",
-                "values": [
-                  "Bearer ",
-                  {
-                    "$op": "trim",
-                    "value": {
-                      "$op": "path",
-                      "path": "config.api_token"
-                    }
-                  }
-                ]
-              },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
-            },
-            "json": {
-              "query": "query TomeioTopPicks($userId: Int!) { vibes(where: { user_id: { _eq: $userId }, vibe_type: { _eq: 3 } }, order_by: { updated_at: desc }, limit: 1) { cached_book_ids } }",
+              "query": "query TomeioVibe($slug: String!) { vibes(where: { slug: { _eq: $slug }, privacy_setting_id: { _eq: 1 }, user: { username: { _eq: \"hardcover\" } } }, limit: 1) { cached_book_ids } }",
               "variables": {
-                "userId": {
-                  "$op": "number",
-                  "value": {
-                    "$op": "path",
-                    "path": "steps.me.body.data.me.0.id"
-                  }
-                }
-              }
-            },
-            "response": "json",
-            "timeoutMs": 10000
-          },
-          "accept": {
-            "$op": "and",
-            "values": [
-              {
-                "$op": "path",
-                "path": "response.ok"
-              },
-              {
-                "$op": "not",
-                "value": {
-                  "$op": "path",
-                  "path": "response.body.errors"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "featured_vibe",
-          "when": {
-            "$op": "equals",
-            "values": [
-              {
-                "$op": "path",
-                "path": "input.catalogId",
-                "default": "trending-week"
-              },
-              "featured-vibe"
-            ]
-          },
-          "request": {
-            "urls": "https://api.hardcover.app/v1/graphql",
-            "method": "POST",
-            "headers": {
-              "Accept": "application/json",
-              "Authorization": {
-                "$op": "concat",
-                "values": [
-                  "Bearer ",
-                  {
-                    "$op": "trim",
-                    "value": {
-                      "$op": "path",
-                      "path": "config.api_token"
+                "slug": {
+                  "$op": "if",
+                  "values": [
+                    {
+                      "$op": "equals",
+                      "values": [
+                        {
+                          "$op": "path",
+                          "path": "input.catalogId"
+                        },
+                        "vibe-hidden-gem-fantasy"
+                      ]
+                    },
+                    "hidden-gem-fantasy",
+                    {
+                      "$op": "if",
+                      "values": [
+                        {
+                          "$op": "equals",
+                          "values": [
+                            {
+                              "$op": "path",
+                              "path": "input.catalogId"
+                            },
+                            "vibe-romantasy"
+                          ]
+                        },
+                        "romantasy",
+                        "enemies-to-lovers"
+                      ]
                     }
-                  }
-                ]
-              },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
-            },
-            "json": {
-              "query": "query TomeioFeaturedVibe { vibes(where: { featured: { _eq: true }, privacy_setting_id: { _eq: 1 } }, order_by: [{ featured_at: desc }, { likes_count: desc }], limit: 1) { cached_book_ids } }",
-              "variables": {}
+                  ]
+                }
+              }
             },
             "response": "json",
             "timeoutMs": 10000
@@ -318,13 +228,6 @@
                 "value": {
                   "$op": "path",
                   "path": "response.body.errors"
-                }
-              },
-              {
-                "$op": "not",
-                "value": {
-                  "$op": "path",
-                  "path": "response.body.data.search.error"
                 }
               }
             ]
@@ -350,7 +253,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
@@ -365,17 +268,8 @@
                     {
                       "$op": "slice",
                       "value": {
-                        "$op": "coalesce",
-                        "values": [
-                          {
-                            "$op": "path",
-                            "path": "steps.top_picks.body.data.vibes.0.cached_book_ids"
-                          },
-                          {
-                            "$op": "path",
-                            "path": "steps.featured_vibe.body.data.vibes.0.cached_book_ids"
-                          }
-                        ]
+                        "$op": "path",
+                        "path": "steps.vibe.body.data.vibes.0.cached_book_ids"
                       },
                       "values": [
                         {
@@ -501,17 +395,8 @@
                     {
                       "$op": "slice",
                       "value": {
-                        "$op": "coalesce",
-                        "values": [
-                          {
-                            "$op": "path",
-                            "path": "steps.top_picks.body.data.vibes.0.cached_book_ids"
-                          },
-                          {
-                            "$op": "path",
-                            "path": "steps.featured_vibe.body.data.vibes.0.cached_book_ids"
-                          }
-                        ]
+                        "$op": "path",
+                        "path": "steps.vibe.body.data.vibes.0.cached_book_ids"
                       },
                       "values": [
                         {
@@ -736,17 +621,8 @@
                       {
                         "$op": "slice",
                         "value": {
-                          "$op": "coalesce",
-                          "values": [
-                            {
-                              "$op": "path",
-                              "path": "steps.top_picks.body.data.vibes.0.cached_book_ids"
-                            },
-                            {
-                              "$op": "path",
-                              "path": "steps.featured_vibe.body.data.vibes.0.cached_book_ids"
-                            }
-                          ]
+                          "$op": "path",
+                          "path": "steps.vibe.body.data.vibes.0.cached_book_ids"
                         },
                         "values": [
                           {
@@ -873,7 +749,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -950,7 +826,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
@@ -1210,7 +1086,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -1305,7 +1181,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
@@ -1552,7 +1428,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -1654,7 +1530,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.0"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
             },
             "json": {
               "query": "query TomeioReviews($bookId: Int!, $limit: Int!, $offset: Int!) { user_books(where: { book_id: { _eq: $bookId }, has_review: { _eq: true }, privacy_setting_id: { _eq: 1 } }, order_by: [{ likes_count: desc }, { reviewed_at: desc }], limit: $limit, offset: $offset) { id rating review review_markdown review_has_spoilers reviewed_at likes_count user { name username avatarUrl: cached_image(path: \"url\") } } }",
