@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.hardcover",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "name": "Hardcover",
   "description": "Hardcover trending, curated vibes, search, ratings, covers, and reader reviews.",
   "author": "Tomeio community",
