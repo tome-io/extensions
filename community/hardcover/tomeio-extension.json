@@ -1,12 +1,13 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.hardcover",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "name": "Hardcover",
   "description": "Hardcover trending, curated vibes, search, ratings, covers, and reader reviews.",
   "author": "Tomeio community",
   "homepage": "https://hardcover.app",
   "repository": "https://github.com/tome-io/extensions/tree/main/community/hardcover",
+  "icon": "https://raw.githubusercontent.com/hardcoverapp/static-assets/main/static/logos/logo-standalone.png",
   "types": [
     "book"
   ],

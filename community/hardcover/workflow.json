@@ -34,46 +34,12 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioTrending($duration: TrendingDuration!, $limit: Int!, $offset: Int!) { books_trending(duration: $duration, limit: $limit, offset: $offset) { ids } }",
               "variables": {
-                "duration": {
-                  "$op": "if",
-                  "values": [
-                    {
-                      "$op": "equals",
-                      "values": [
-                        {
-                          "$op": "path",
-                          "path": "input.catalogId",
-                          "default": "trending-week"
-                        },
-                        "trending-month"
-                      ]
-                    },
-                    "month",
-                    {
-                      "$op": "if",
-                      "values": [
-                        {
-                          "$op": "equals",
-                          "values": [
-                            {
-                              "$op": "path",
-                              "path": "input.catalogId",
-                              "default": "trending-week"
-                            },
-                            "trending-year"
-                          ]
-                        },
-                        "one_year",
-                        "week"
-                      ]
-                    }
-                  ]
-                },
+                "duration": "week",
                 "limit": {
                   "$op": "number",
                   "value": {
@@ -173,7 +139,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioVibe($slug: String!) { vibes(where: { slug: { _eq: $slug }, privacy_setting_id: { _eq: 1 }, user: { username: { _eq: \"hardcover\" } } }, limit: 1) { cached_book_ids } }",
@@ -253,7 +219,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
@@ -749,7 +715,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -826,7 +792,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
@@ -1086,7 +1052,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -1138,7 +1104,7 @@
                   ]
                 },
                 "page": 1,
-                "limit": 1
+                "limit": 8
               }
             },
             "response": "json",
@@ -1181,29 +1147,38 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioBooks($ids: [Int!]!) { books(where: { id: { _in: $ids } }) { id title description release_date slug rating ratings_count contributions { author { name } } image { url } } }",
               "variables": {
                 "ids": {
-                  "$op": "array",
-                  "value": {
-                    "$op": "number",
-                    "value": {
-                      "$op": "coalesce",
-                      "values": [
-                        {
+                  "$op": "if",
+                  "values": [
+                    {
+                      "$op": "path",
+                      "path": "input.book.identifiers.hardcover"
+                    },
+                    {
+                      "$op": "array",
+                      "value": {
+                        "$op": "number",
+                        "value": {
                           "$op": "path",
                           "path": "input.book.identifiers.hardcover"
-                        },
-                        {
-                          "$op": "path",
-                          "path": "steps.locate.body.data.search.ids.0"
                         }
-                      ]
+                      }
+                    },
+                    {
+                      "$op": "slice",
+                      "value": {
+                        "$op": "path",
+                        "path": "steps.locate.body.data.search.ids",
+                        "default": []
+                      },
+                      "values": [0, 8]
                     }
-                  }
+                  ]
                 }
               }
             },
@@ -1247,23 +1222,32 @@
               },
               "values": [
                 {
-                  "$op": "array",
-                  "value": {
-                    "$op": "number",
-                    "value": {
-                      "$op": "coalesce",
-                      "values": [
-                        {
+                  "$op": "if",
+                  "values": [
+                    {
+                      "$op": "path",
+                      "path": "input.book.identifiers.hardcover"
+                    },
+                    {
+                      "$op": "array",
+                      "value": {
+                        "$op": "number",
+                        "value": {
                           "$op": "path",
                           "path": "input.book.identifiers.hardcover"
-                        },
-                        {
-                          "$op": "path",
-                          "path": "steps.locate.body.data.search.ids.0"
                         }
-                      ]
+                      }
+                    },
+                    {
+                      "$op": "slice",
+                      "value": {
+                        "$op": "path",
+                        "path": "steps.locate.body.data.search.ids",
+                        "default": []
+                      },
+                      "values": [0, 8]
                     }
-                  }
+                  ]
                 }
               ]
             },
@@ -1282,6 +1266,40 @@
                       {
                         "$op": "path",
                         "path": "book.title"
+                      },
+                      {
+                        "$op": "coalesce",
+                        "values": [
+                          {
+                            "$op": "path",
+                            "path": "input.book.identifiers.hardcover"
+                          },
+                          {
+                            "$op": "equals",
+                            "values": [
+                              {
+                                "$op": "lowercase",
+                                "value": {
+                                  "$op": "trim",
+                                  "value": {
+                                    "$op": "path",
+                                    "path": "book.title"
+                                  }
+                                }
+                              },
+                              {
+                                "$op": "lowercase",
+                                "value": {
+                                  "$op": "trim",
+                                  "value": {
+                                    "$op": "path",
+                                    "path": "input.book.title"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
                       }
                     ]
                   },
@@ -1428,7 +1446,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioSearch($query: String!, $page: Int!, $limit: Int!) { search(query: $query, query_type: \"Book\", page: $page, per_page: $limit) { ids page per_page } }",
@@ -1530,7 +1548,7 @@
                   }
                 ]
               },
-              "User-Agent": "Tomeio Hardcover community add-on/0.1.1"
+              "User-Agent": "Tomeio Hardcover community add-on/0.1.2"
             },
             "json": {
               "query": "query TomeioReviews($bookId: Int!, $limit: Int!, $offset: Int!) { user_books(where: { book_id: { _eq: $bookId }, has_review: { _eq: true }, privacy_setting_id: { _eq: 1 } }, order_by: [{ likes_count: desc }, { reviewed_at: desc }], limit: $limit, offset: $offset) { id rating review review_markdown review_has_spoilers reviewed_at likes_count user { name username avatarUrl: cached_image(path: \"url\") } } }",
