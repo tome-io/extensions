@@ -1,0 +1,27 @@
+{
+  "manifestVersion": 1,
+  "id": "community.tomeio.kobo",
+  "version": "0.1.0",
+  "name": "Kobo eReader",
+  "description": "Connects a Kobo eReader to Tomeio Sync for EPUB library metadata and reading progress.",
+  "author": "Tomeio community",
+  "icon": "https://maint.kobo.com/kobo-maintenance/android-chrome-192x192.png",
+  "homepage": "https://www.kobo.com/",
+  "repository": "https://github.com/tome-io/extensions/tree/main/community/kobo",
+  "types": ["book"],
+  "resources": [{ "name": "reader" }],
+  "behaviorHints": { "configurable": false, "configurationRequired": false },
+  "readerSetups": [
+    {
+      "id": "hosted-sync",
+      "title": "Connect Kobo eReader",
+      "description": "Generate the private endpoint used by Kobo's built-in sync client.",
+      "icon": "book-open",
+      "platforms": ["android", "ios"]
+    }
+  ],
+  "transport": {
+    "kind": "host",
+    "adapter": "tomeio-sync-kobo"
+  }
+}
