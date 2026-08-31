@@ -16,7 +16,7 @@ declared capabilities have been reviewed for in-app community discovery.
 - its HTTPS manifest and repository URLs;
 - the minimum compatible Tomeio version;
 - when it was last reviewed;
-- any reviewed device capabilities and Android packages it may invoke.
+- any reviewed host adapters, device capabilities, and Android packages it may invoke.
 
 The app downloads the registry, validates every manifest with the Tomeio protocol, and
 then displays the entries under the Community filter. Installing a community add-on
@@ -29,6 +29,8 @@ Reviewed device add-ons, such as Moon+ Reader, live in this repository with thei
 manifest and JSON workflow. Tomeio core exposes generic, permissioned device primitives;
 reader-specific actions remain here and are dormant until installation. Reader progress
 sync belongs to Tomeio's first-party sync service, not an add-on backup importer.
+Kobo follows the same boundary: its manifest enables a reviewed setup surface while
+the hosted sync service implements library-metadata and progress compatibility.
 
 Hosted add-ons keep their TypeScript source and deployment in their own repositories.
 After review, this registry points to their published manifest; it never executes source
