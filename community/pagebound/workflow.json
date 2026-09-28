@@ -2,6 +2,22 @@
   "workflowVersion": 1,
   "resources": {
     "catalog": {
+      "session": {
+        "steps": ["firebase", "session"],
+        "output": { "session": { "body": { "token": { "$op": "path", "path": "steps.session.body.token" } } } },
+        "validate": {
+          "request": {
+            "urls": "https://prod-pagebound-api.onrender.com/api/v1/auth/get_authed_user",
+            "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } },
+            "response": "text"
+          },
+          "accept": { "$op": "path", "path": "response.ok" },
+          "invalidWhen": { "$op": "if", "values": [
+            { "$op": "equals", "values": [{ "$op": "path", "path": "response.status" }, 401] }, true,
+            { "$op": "and", "values": [{ "$op": "equals", "values": [{ "$op": "path", "path": "response.status" }, 500] }, { "$op": "equals", "values": [{ "$op": "path", "path": "response.body" }, ""] }] }
+          ] }
+        }
+      },
       "steps": [
         {
           "id": "firebase",
@@ -39,6 +55,7 @@
         },
         {
           "id": "library",
+          "authenticated": true,
           "when": { "$op": "in", "values": [{ "$op": "path", "path": "input.catalogId" }, ["current", "tbr", "interested", "finished", "dnf", "paused"]] },
           "request": {
             "urls": "https://prod-pagebound-api.onrender.com/api/v1/user_books",
@@ -168,6 +185,22 @@
       }
     },
     "resolve": {
+      "session": {
+        "steps": ["firebase", "session"],
+        "output": { "session": { "body": { "token": { "$op": "path", "path": "steps.session.body.token" } } } },
+        "validate": {
+          "request": {
+            "urls": "https://prod-pagebound-api.onrender.com/api/v1/auth/get_authed_user",
+            "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } },
+            "response": "text"
+          },
+          "accept": { "$op": "path", "path": "response.ok" },
+          "invalidWhen": { "$op": "if", "values": [
+            { "$op": "equals", "values": [{ "$op": "path", "path": "response.status" }, 401] }, true,
+            { "$op": "and", "values": [{ "$op": "equals", "values": [{ "$op": "path", "path": "response.status" }, 500] }, { "$op": "equals", "values": [{ "$op": "path", "path": "response.body" }, ""] }] }
+          ] }
+        }
+      },
       "steps": [
         {
           "id": "firebase",
@@ -197,6 +230,7 @@
         {
           "id": "book",
           "when": { "$op": "path", "path": "input.book.identifiers.pagebound" },
+          "authenticated": true,
           "request": {
             "urls": { "$op": "concat", "values": ["https://prod-pagebound-api.onrender.com/api/v1/books/", { "$op": "encode", "value": { "$op": "path", "path": "input.book.identifiers.pagebound" } }] },
             "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } }
@@ -252,6 +286,22 @@
       }
     },
     "reviews": {
+      "session": {
+        "steps": ["firebase", "session"],
+        "output": { "session": { "body": { "token": { "$op": "path", "path": "steps.session.body.token" } } } },
+        "validate": {
+          "request": {
+            "urls": "https://prod-pagebound-api.onrender.com/api/v1/auth/get_authed_user",
+            "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } },
+            "response": "text"
+          },
+          "accept": { "$op": "path", "path": "response.ok" },
+          "invalidWhen": { "$op": "if", "values": [
+            { "$op": "equals", "values": [{ "$op": "path", "path": "response.status" }, 401] }, true,
+            { "$op": "and", "values": [{ "$op": "equals", "values": [{ "$op": "path", "path": "response.status" }, 500] }, { "$op": "equals", "values": [{ "$op": "path", "path": "response.body" }, ""] }] }
+          ] }
+        }
+      },
       "steps": [
         {
           "id": "search",
@@ -304,6 +354,7 @@
         },
         {
           "id": "reviews",
+          "authenticated": true,
           "when": { "$op": "path", "path": "steps.session.body.token" },
           "request": {
             "urls": { "$op": "concat", "values": ["https://prod-pagebound-api.onrender.com/api/v1/books/", { "$op": "encode", "value": { "$op": "coalesce", "values": [{ "$op": "path", "path": "input.book.identifiers.pagebound" }, { "$op": "path", "path": "steps.search.body.hits.0.document.uuid" }] } }, "/reviews"] },

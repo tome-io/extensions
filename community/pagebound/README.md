@@ -40,13 +40,18 @@ it receives search terms, not account credentials. The Firebase project key and
 Typesense search key in the workflow are public client configuration, not a shared
 reader account. No personal credentials or session tokens are committed.
 
-The current declarative runtime does not cache login sessions between invocations.
-Library catalog, known-ID resolve, and matched review calls each log
-in again. Discovery catalogs and book metadata use public endpoints, so Home rating
-enrichment and detail-screen visits do not cause additional logins. Ordinary search
-and title/author resolution also do not log in. Authentication
-errors propagate rather than producing an empty library. A future generic session
-cache could reduce login traffic without adding a provider-specific host adapter.
+Updated Tomeio hosts reuse one session across library, known-ID resolution, and
+reviews, including simultaneous calls. Only the Pagebound token is retained in
+native secure storage; platforms without secure storage keep it in memory.
+Credential changes, disabling, and removal clear it. Older hosts still sign in
+per operation using the retained login steps.
+
+Pagebound's token has no advertised expiry, and invalid tokens can return an empty
+library. Reused sessions are checked through `/auth/get_authed_user` before data
+reads. Its observed invalid-token response (401 or an empty 500) triggers a fresh
+login; other validation failures surface as errors. An outage with the same empty
+500 may also trigger a login attempt. Authenticated reads retry once on HTTP 401.
+Discovery, metadata, ordinary search, and title/author resolution stay public.
 
 ## Matching and pagination
 
