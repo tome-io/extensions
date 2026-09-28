@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "community.tomeio.pagebound",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Pagebound",
   "description": "Pagebound discovery, personal library shelves, search, covers, ratings, and reader reviews.",
   "author": "Tomeio community",

@@ -13,7 +13,7 @@ No hosted proxy or changes to Tomeio core are required.
 - Title/author search and cover resolution.
 - Book details with descriptions, tags, publication year, aggregate ratings,
   rating counts, series positions, and Pagebound/Goodreads identifiers when available.
-- Written reviews with ratings, author links, dates, upvotes, and spoiler flags.
+- Written reviews with ratings, author avatars and links, dates, upvotes, and spoiler flags.
   Blocked and flagged reviews are omitted.
 
 Library catalogs let readers browse and add books through Tomeio's existing catalog
@@ -41,8 +41,10 @@ Typesense search key in the workflow are public client configuration, not a shar
 reader account. No personal credentials or session tokens are committed.
 
 The current declarative runtime does not cache login sessions between invocations.
-Authenticated catalog, detail, known-ID resolve, and matched review calls each log
-in again. Ordinary search and title/author resolution do not log in. Authentication
+Authenticated catalog, known-ID resolve, and matched review calls each log
+in again. Book metadata uses Pagebound's public detail endpoint, so Home rating
+enrichment and detail-screen visits do not cause additional logins. Ordinary search
+and title/author resolution also do not log in. Authentication
 errors propagate rather than producing an empty library. A future generic session
 cache could reduce login traffic without adding a provider-specific host adapter.
 
@@ -63,6 +65,11 @@ Library and review pages use Pagebound's native pagination and `total_pages`, so
 their page sizes may differ from Tomeio's requested `limit`. No native page is
 truncated, which would otherwise skip records. Search rating counts can lag behind
 book-detail counts because Pagebound maintains a separate search index.
+
+Discovery responses often omit the overall rating. Updated Tomeio clients fill
+missing catalog ratings through the shared, cached `meta` handler used by book
+details. Older clients show the rating only on the detail screen. Unrated books
+remain unrated; rating counts are not used to invent an average.
 
 ## Investigation and limits
 

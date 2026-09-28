@@ -142,33 +142,9 @@
     "meta": {
       "steps": [
         {
-          "id": "firebase",
-          "request": {
-            "urls": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword",
-            "method": "POST",
-            "query": { "key": "AIzaSyDCfBJ51pRZgHueBfBz0KNDiPNev1ClnGg" },
-            "json": {
-              "email": { "$op": "trim", "value": { "$op": "path", "path": "config.email" } },
-              "password": { "$op": "path", "path": "config.password" },
-              "returnSecureToken": true
-            }
-          },
-          "accept": { "$op": "and", "values": [{ "$op": "path", "path": "response.ok" }, { "$op": "path", "path": "response.body.idToken" }] }
-        },
-        {
-          "id": "session",
-          "request": {
-            "urls": "https://prod-pagebound-api.onrender.com/api/v1/auth/firebase_auth",
-            "method": "POST",
-            "json": { "id_token": { "$op": "path", "path": "steps.firebase.body.idToken" } }
-          },
-          "accept": { "$op": "and", "values": [{ "$op": "path", "path": "response.ok" }, { "$op": "path", "path": "response.body.token" }] }
-        },
-        {
           "id": "book",
           "request": {
-            "urls": { "$op": "concat", "values": ["https://prod-pagebound-api.onrender.com/api/v1/books/", { "$op": "encode", "value": { "$op": "path", "path": "input.id" } }] },
-            "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } }
+            "urls": { "$op": "concat", "values": ["https://prod-pagebound-api.onrender.com/api/v1/books/", { "$op": "encode", "value": { "$op": "path", "path": "input.id" } }] }
           },
           "accept": { "$op": "and", "values": [{ "$op": "path", "path": "response.ok" }, { "$op": "path", "path": "response.body.book.uuid" }] }
         }
@@ -364,6 +340,7 @@
               "reviewedAt": { "$op": "path", "path": "review.created_at" },
               "containsSpoilers": { "$op": "path", "path": "review.is_spoiler" },
               "likesCount": { "$op": "path", "path": "review.upvotes" },
+              "authorAvatarUrl": { "$op": "if", "values": [{ "$op": "path", "path": "review.user_image_url" }, { "$op": "absoluteUrl", "value": { "$op": "path", "path": "review.user_image_url" }, "base": "https://cdn.pagebound.co" }, null] },
               "authorUrl": { "$op": "concat", "values": ["https://pagebound.co/users/", { "$op": "encode", "value": { "$op": "path", "path": "review.username" } }] }
             }
           }]
