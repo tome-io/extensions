@@ -54,7 +54,7 @@ Paths below are relative to `https://prod-pagebound-api.onrender.com/api/v1`.
 | `GET /books?q=most_tbr_yesterday` | Array of books. |
 | `GET /books?q=most_discussed_yesterday` | Array of books. |
 | `GET /books/:book_uuid` | `{book, user_book}`; details, aggregate/sub-ratings, tags, recommendations, quests, lists, and forum metadata. |
-| `GET /books/:numeric_book_id/reviews` | `{reviews, user_review, total_pages}`; supports `page`, `only_written_reviews`, `only_following`, and `sort_by=most_upvotes`. |
+| `GET /books/:book_uuid/reviews` | `{reviews, user_review, total_pages}`; also accepts a numeric book ID. Supports `page`, `only_written_reviews`, `only_following`, and `sort_by=most_upvotes`. |
 | `GET /user_books?status=current&page=1` | `{user_books, total_pages, total_count}`; supplied account was empty. |
 | `GET /user_books?page=1` | Same response keys; supplied account was empty. |
 | `GET /shelves` | Custom shelves; supplied account returned an empty array. |
@@ -63,6 +63,12 @@ The site's status values are `current`, `tbr`, `interested`, `finished`, `dnf`,
 and `paused`. Library results are flattened user-book records: the UI reads
 `book_uuid`, `title`, `author_name`, and `image_url` directly, not a nested `book`.
 Their own `uuid` belongs to the user's library entry.
+
+Review timing: the previous login, session exchange, book lookup, and review
+workflow took 2.4–3.2 seconds in two live runs. Direct UUID review reads removed
+the lookup and took 1.86 seconds in each of two runs, with identical review IDs.
+The native page contained 10 reviews (about 42 KB). Public review reads also work,
+but this extension keeps authentication to preserve account-specific blocking.
 
 Details supply `aggregate_ratings.overall` as a numeric string and
 `aggregate_ratings.ratings_count` as a number. Discovery often omits aggregate

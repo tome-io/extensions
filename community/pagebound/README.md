@@ -50,8 +50,8 @@ cache could reduce login traffic without adding a provider-specific host adapter
 
 ## Matching and pagination
 
-Pagebound book UUIDs are the canonical add-on IDs. Numeric database IDs are used
-only internally for the reviews endpoint. User-book UUIDs identify library entries
+Pagebound book UUIDs are the canonical add-on IDs and can be used directly for
+reviews, avoiding an extra book-detail request. User-book UUIDs identify library entries
 and must not be used as book UUIDs.
 
 Resolution uses a Pagebound identifier when present; otherwise it requires an exact
