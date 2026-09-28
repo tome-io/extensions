@@ -26,9 +26,27 @@ Firebase project: `pagebound-430920`. Email/password login returns an ID token.
 use the returned Pagebound token. Passing the Firebase ID token directly to
 `/auth/get_authed_user` failed; the token exchange is required.
 
-No refresh or expiry contract for the Pagebound token was established. The
-implementation obtains a fresh session per authenticated invocation. Keep all
-tokens out of source, fixtures, telemetry, and URLs.
+The returned Pagebound JWT has only a `user_id` claim, with no `exp` or `iat`.
+Firebase's `expiresIn: 3600` applies to its ID token, not the Pagebound session.
+No Pagebound refresh endpoint was established. Updated hosts save and reuse the
+Pagebound token and repeat login only when invalidated. Keep all tokens out of
+source, fixtures, telemetry, and URLs.
+
+Live validation showed an invalid bearer token can still return HTTP 200 with an
+empty library. `GET /auth/get_authed_user` distinguishes the tested cases: a valid
+token returns 200 with `{user, preferences}`, while an invalid token returns an
+empty 500. The session declaration checks that endpoint before each reused session
+and recognizes only 401 or an empty 500 as an invalidation response. Other errors
+propagate. An outage with an identical empty 500 is indistinguishable and may
+trigger one login attempt. The saved session output contains only the Pagebound
+token, not the Firebase token, profile, or preferences.
+
+Live shared-session verification: simultaneous library/reviews used one login;
+warm library took 0.81 seconds and warm reviews 1.63–1.98 seconds including the
+session check, with no login calls. A simulated loader restart reused the saved
+session, and an invalid saved token triggered one renewal before returning data.
+These tests used an in-memory persistence adapter; native secure-storage behavior
+still needs device validation.
 
 Follow-up verification confirmed `GET /books/:book_uuid` also works without an
 Authorization header and includes aggregate ratings. The `meta` resource uses
