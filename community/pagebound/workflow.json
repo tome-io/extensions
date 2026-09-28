@@ -303,19 +303,10 @@
           "accept": { "$op": "and", "values": [{ "$op": "path", "path": "response.ok" }, { "$op": "path", "path": "response.body.token" }] }
         },
         {
-          "id": "book",
+          "id": "reviews",
           "when": { "$op": "path", "path": "steps.session.body.token" },
           "request": {
-            "urls": { "$op": "concat", "values": ["https://prod-pagebound-api.onrender.com/api/v1/books/", { "$op": "encode", "value": { "$op": "coalesce", "values": [{ "$op": "path", "path": "input.book.identifiers.pagebound" }, { "$op": "path", "path": "steps.search.body.hits.0.document.uuid" }] } }] },
-            "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } }
-          },
-          "accept": { "$op": "and", "values": [{ "$op": "path", "path": "response.ok" }, { "$op": "path", "path": "response.body.book.id" }] }
-        },
-        {
-          "id": "reviews",
-          "when": { "$op": "path", "path": "steps.book.body.book.id" },
-          "request": {
-            "urls": { "$op": "concat", "values": ["https://prod-pagebound-api.onrender.com/api/v1/books/", { "$op": "path", "path": "steps.book.body.book.id" }, "/reviews"] },
+            "urls": { "$op": "concat", "values": ["https://prod-pagebound-api.onrender.com/api/v1/books/", { "$op": "encode", "value": { "$op": "coalesce", "values": [{ "$op": "path", "path": "input.book.identifiers.pagebound" }, { "$op": "path", "path": "steps.search.body.hits.0.document.uuid" }] } }, "/reviews"] },
             "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } },
             "query": {
               "page": { "$op": "path", "path": "input.page", "default": 1 },
