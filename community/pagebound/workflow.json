@@ -5,6 +5,7 @@
       "steps": [
         {
           "id": "firebase",
+          "when": { "$op": "in", "values": [{ "$op": "path", "path": "input.catalogId" }, ["current", "tbr", "interested", "finished", "dnf", "paused"]] },
           "request": {
             "urls": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword",
             "method": "POST",
@@ -19,6 +20,7 @@
         },
         {
           "id": "session",
+          "when": { "$op": "path", "path": "steps.firebase.body.idToken" },
           "request": {
             "urls": "https://prod-pagebound-api.onrender.com/api/v1/auth/firebase_auth",
             "method": "POST",
@@ -31,7 +33,6 @@
           "when": { "$op": "in", "values": [{ "$op": "path", "path": "input.catalogId", "default": "emoji" }, ["emoji", "most_finished_yesterday", "most_tbr_yesterday", "most_discussed_yesterday"]] },
           "request": {
             "urls": "https://prod-pagebound-api.onrender.com/api/v1/books",
-            "headers": { "Authorization": { "$op": "concat", "values": ["Bearer ", { "$op": "path", "path": "steps.session.body.token" }] } },
             "query": { "q": { "$op": "path", "path": "input.catalogId", "default": "emoji" } }
           },
           "accept": { "$op": "and", "values": [{ "$op": "path", "path": "response.ok" }, { "$op": "not", "value": { "$op": "path", "path": "response.body.error" } }] }
@@ -64,8 +65,8 @@
                 "$op": "slice",
                 "value": { "$op": "coalesce", "values": [{ "$op": "path", "path": "steps.discovery.body.books" }, { "$op": "path", "path": "steps.discovery.body" }] },
                 "values": [
-                  { "$op": "multiply", "values": [{ "$op": "add", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, -1] }, 20] },
-                  { "$op": "multiply", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, 20] }
+                  { "$op": "multiply", "values": [{ "$op": "add", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, -1] }, { "$op": "path", "path": "input.limit", "default": 20 }] },
+                  { "$op": "multiply", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, { "$op": "path", "path": "input.limit", "default": 20 }] }
                 ]
               }
             ]
@@ -93,7 +94,7 @@
           { "$op": "if", "values": [
             { "$op": "path", "path": "steps.library.body.user_books" },
             { "$op": "lessThan", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, { "$op": "path", "path": "steps.library.body.total_pages" }] },
-            { "$op": "lessThan", "values": [{ "$op": "multiply", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, 20] }, { "$op": "length", "value": { "$op": "coalesce", "values": [{ "$op": "path", "path": "steps.discovery.body.books" }, { "$op": "path", "path": "steps.discovery.body" }] } }] }
+            { "$op": "lessThan", "values": [{ "$op": "multiply", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, { "$op": "path", "path": "input.limit", "default": 20 }] }, { "$op": "length", "value": { "$op": "coalesce", "values": [{ "$op": "path", "path": "steps.discovery.body.books" }, { "$op": "path", "path": "steps.discovery.body" }] } }] }
           ] },
           { "$op": "add", "values": [{ "$op": "path", "path": "input.page", "default": 1 }, 1] }, null
         ] }

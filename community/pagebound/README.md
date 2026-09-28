@@ -41,8 +41,8 @@ Typesense search key in the workflow are public client configuration, not a shar
 reader account. No personal credentials or session tokens are committed.
 
 The current declarative runtime does not cache login sessions between invocations.
-Authenticated catalog, known-ID resolve, and matched review calls each log
-in again. Book metadata uses Pagebound's public detail endpoint, so Home rating
+Library catalog, known-ID resolve, and matched review calls each log
+in again. Discovery catalogs and book metadata use public endpoints, so Home rating
 enrichment and detail-screen visits do not cause additional logins. Ordinary search
 and title/author resolution also do not log in. Authentication
 errors propagate rather than producing an empty library. A future generic session
@@ -60,7 +60,8 @@ Pagebound identifier require a unique search result and the same exact match.
 Ambiguous matches return no reviews. ISBN lookup is not implemented because the
 public search index inspected does not expose ISBN fields.
 
-Search pages contain 24 results. Discovery lists are sliced into pages of 20.
+Search pages contain 24 results. Discovery lists honor the requested page size,
+defaulting to 20.
 Library and review pages use Pagebound's native pagination and `total_pages`, so
 their page sizes may differ from Tomeio's requested `limit`. No native page is
 truncated, which would otherwise skip records. Search rating counts can lag behind
@@ -68,7 +69,9 @@ book-detail counts because Pagebound maintains a separate search index.
 
 Discovery responses often omit the overall rating. Updated Tomeio clients fill
 missing catalog ratings through the shared, cached `meta` handler used by book
-details. Older clients show the rating only on the detail screen. Unrated books
+details. Clients with progressive enrichment display the catalog first and fill
+ratings in afterward. Older clients may wait for all metadata requests before
+showing the catalog, or show ratings only on the detail screen. Unrated books
 remain unrated; rating counts are not used to invent an average.
 
 ## Investigation and limits

@@ -33,6 +33,15 @@ tokens out of source, fixtures, telemetry, and URLs.
 Follow-up verification confirmed `GET /books/:book_uuid` also works without an
 Authorization header and includes aggregate ratings. The `meta` resource uses
 this public read, avoiding repeated authentication when enriching Home cards.
+Discovery reads also work without authentication. Catalog login is limited to
+personal library shelves. Discovery pagination honors the requested limit.
+
+Live workflow timing found catalog hydration was delaying display: 20 serial
+detail calls took 17.8 seconds after the list request. The host now enriches
+ratings after displaying books, using its shared metadata cache. In a follow-up
+run, public discovery returned 10 books in 1.1 seconds; library authentication and
+the empty Reading shelf took 2.2 seconds. These are individual measurements,
+not latency guarantees.
 
 ## Confirmed reads
 
