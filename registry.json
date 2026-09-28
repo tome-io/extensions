@@ -35,6 +35,13 @@
       "androidPackages": ["com.google.android.apps.books"]
     },
     {
+      "id": "community.tomeio.pagebound",
+      "manifestUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/pagebound/tomeio-extension.json",
+      "repositoryUrl": "https://github.com/tome-io/extensions/tree/main/community/pagebound",
+      "minimumClientVersion": "1.0.0",
+      "reviewedAt": "2026-09-28T00:00:00Z"
+    },
+    {
       "id": "community.tomeio.hardcover",
       "manifestUrl": "https://raw.githubusercontent.com/tome-io/extensions/main/community/hardcover/tomeio-extension.json",
       "repositoryUrl": "https://github.com/tome-io/extensions/tree/main/community/hardcover",
