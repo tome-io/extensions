@@ -30,6 +30,10 @@ No refresh or expiry contract for the Pagebound token was established. The
 implementation obtains a fresh session per authenticated invocation. Keep all
 tokens out of source, fixtures, telemetry, and URLs.
 
+Follow-up verification confirmed `GET /books/:book_uuid` also works without an
+Authorization header and includes aggregate ratings. The `meta` resource uses
+this public read, avoiding repeated authentication when enriching Home cards.
+
 ## Confirmed reads
 
 Paths below are relative to `https://prod-pagebound-api.onrender.com/api/v1`.
@@ -61,6 +65,8 @@ Review records include `id`, `uuid`, `username`, `review`, `overall_rating`,
 `is_spoiler`, `is_dnf`, `is_blocked`, `is_flagged`, `upvotes`, and `created_at`.
 Review text is Markdown. The date observed is a formatted date string, not a
 precise timestamp. The add-on retains it without inventing a time or timezone.
+`user_image_url` is an avatar path relative to `https://cdn.pagebound.co`; the
+workflow resolves it to `authorAvatarUrl`. Missing avatars remain absent.
 
 ## Search
 
